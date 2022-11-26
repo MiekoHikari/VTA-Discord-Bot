@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-	console.log(`Example app listening on port ${port}`);
+	console.log(`VTA BOT listening on port ${port}`);
 });
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');

@@ -3,6 +3,9 @@ const Application = require('../Database/Schemas/application');
 const mongoose = require('mongoose');
 const dayjs = require('dayjs');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
@@ -31,7 +34,7 @@ module.exports = {
 					});
 
 					Application.bulkSave([userval]);
-					interaction.update({ embeds: [createDialog], components: [] });
+					interaction.update({ embeds: [createDialog], components: [], ephemeral: true });
 				}
 			}
 
@@ -41,7 +44,7 @@ module.exports = {
 				if (cApp.Status == 'approved') {
 					cApp.Status = 'Not Applied';
 
-					interaction.member.roles.remove('747491394284945530', 'Manual Reapplication request');
+					interaction.member.roles.remove(process.env.VTUBERROLE, 'Manual Reapplication request');
 					Application.bulkSave([cApp]);
 					await interaction.update({ content: 'Your profile has been reverted!', ephemeral: true });
 				}
@@ -130,7 +133,7 @@ module.exports = {
 					);
 
 				// When deploying, chance the channel id to moderation channel.
-				await interaction.guild.channels.cache.get('940162459568832512').send({ content: `${userval._id}`, embeds: [profEmbed, userInfo], components: [rows] });
+				await interaction.guild.channels.cache.get(process.env.APPLICATIONCHANNEL).send({ content: `${userval._id}`, embeds: [profEmbed, userInfo], components: [rows] });
 
 				await interaction.update({ embeds: [embed], ephemeral: true, components: [] });
 			}
@@ -143,7 +146,7 @@ module.exports = {
 
 				const guildMember = await interaction.guild.members.fetch(userProfile.userID);
 
-				await guildMember.roles.add('747491394284945530', `VTuber Application approved by ${interaction.user.tag}`);
+				await guildMember.roles.add(process.env.VTUBERROLE, `VTuber Application approved by ${interaction.user.tag}`);
 
 				// eslint-disable-next-line no-unused-vars
 				const funButton = new ActionRowBuilder()
