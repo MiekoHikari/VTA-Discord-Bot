@@ -3,10 +3,15 @@ const path = require('node:path');
 
 const express = require('express');
 const app = express();
+const port = 1000;
 
 app.get('/', (req, res) => {
 	// 200 status code means OK
 	res.status().send(200);
+});
+
+app.listen(port, () => {
+	console.log(`Example app listening on port ${port}`);
 });
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
