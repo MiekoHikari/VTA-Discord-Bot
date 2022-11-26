@@ -15,7 +15,7 @@ module.exports = {
 						.setDescription('Whether to hide the reply or not {By Default True}'))),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'check') {
-			const userMention = interaction.options.getUser('check-target');
+			const userMention = await interaction.options.getUser('check-target');
 			const target = await Levels.fetch(userMention.id, interaction.guildId);
 
 			if (!target) {
