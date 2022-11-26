@@ -4,7 +4,7 @@ Public Repository that contains the source code of the VTA Bot running in the [V
 
 ## Installation
 
-Requires Node.js
+Requires Node version 16.9.0 or higher
 
 ```bash
 npm install
