@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const Levels = require('discord-xp');
+const LevelsDB = require('../Database/Schemas/levels.js');
 const schedule = require('node-schedule');
 
 module.exports = {
@@ -28,7 +29,7 @@ module.exports = {
 			const apps = await Application.find({});
 
 			apps.forEach(async (lications) => {
-				const LevelProfile = await Levels.findOne({ userID: lications.userID });
+				const LevelProfile = await LevelsDB.findOne({ userID: lications.userID });
 
 				if (!LevelProfile) {
 					return;
