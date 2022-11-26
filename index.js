@@ -1,5 +1,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+	// 200 status code means OK
+	res.status().send(200);
+});
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
