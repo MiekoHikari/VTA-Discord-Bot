@@ -3,7 +3,7 @@ const path = require('node:path');
 
 const express = require('express');
 const app = express();
-const port = 1000;
+const port = 10000;
 
 app.get('/', (req, res) => {
 	// 200 status code means OK
