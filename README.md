@@ -7,7 +7,7 @@ Public Repository that contains the source code of the VTA Bot running in the [V
 Requires Node.js
 
 ```bash
-node install
+npm install
 ```
 
 Create a .env file in the project root folder
