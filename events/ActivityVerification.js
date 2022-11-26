@@ -25,7 +25,7 @@ module.exports = {
 
 			const today = daysjs(Date.now());
 			const lastUpdated = daysjs(LevelProfile.lastUpdated);
-			const duration = today.diff(lastUpdated, 'm');
+			const duration = today.diff(lastUpdated, 'd');
 			// Set unit to days and set the duration to 3 days
 
 			let member = null;
