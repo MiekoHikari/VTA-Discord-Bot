@@ -1,0 +1,22 @@
+{
+  "name": "vta-bot",
+  "version": "1.0.0",
+  "description": "A Bot for the VTA Community",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mieko Hikari",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.11.6",
+    "discord-xp": "^1.1.16",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "mongoose": "^6.7.2",
+    "url-validation": "^2.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.28.0"
+  }
+}
