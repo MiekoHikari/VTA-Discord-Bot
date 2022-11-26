@@ -37,6 +37,22 @@ module.exports = {
 			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 		}
 
+		let ephemerals = true;
+		if (userProfile.Status == 'pending') {
+			if (interaction.user.id == userProfile.userID) {
+				ephemerals = true;
+			}
+			else {
+				const profEmbed = new EmbedBuilder()
+					.setTitle('Profile not applied! ⚠️')
+					.setColor('Red')
+					.setDescription('For the safety of members, pending profile results must be ephemeral and only visible to the profile owner.');
+
+				return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
+			}
+		}
+		else { ephemerals = interaction.options.getBoolean('ephemeral'); }
+
 		// eslint-disable-next-line prefer-const
 		let profEmbed = new EmbedBuilder()
 			.setColor(0xE0115F)
@@ -61,9 +77,6 @@ module.exports = {
 		if (!(userProfile.TikTok == 'None')) {
 			profEmbed.addFields({ name: 'TikTok', value: `${userProfile.TikTok}`, inline: true });
 		}
-
-		let ephemerals = true;
-		ephemerals = interaction.options.getBoolean('ephemeral');
 
 		profEmbed.setImage(`${userProfile.AvatarIcon}`);
 		profEmbed.addFields({ name: 'Profile Status', value: `${userProfile.Status}` });

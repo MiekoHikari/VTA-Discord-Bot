@@ -24,19 +24,29 @@ module.exports = {
 		const userProfile = await Application.findOne({ userID: interaction.user.id });
 
 		if (!userProfile) {
-			const profEmbed = new EmbedBuilder()
-				.setTitle('Profile not found! ⚠️')
-				.setColor('Red')
-				.setDescription('You do not have a VTA Profile. Run the apply command to create a new profile!');
+			const noProfileRow = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('create')
+						.setLabel('Create Profile!')
+						.setStyle(ButtonStyle.Danger),
+				);
 
-			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
+			const noProfileEmbed = new EmbedBuilder()
+				.setColor(0xE0115F)
+				.setTitle('Create new profile?')
+				.setDescription('We can\'t find an existing profile under your userID! Would you like to create a new profile?')
+				.setTimestamp()
+				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
+
+			return await interaction.reply({ embeds: [noProfileEmbed], components: [noProfileRow], ephemeral: true });
 		}
 
 		if (userProfile.Status == 'pending' || userProfile.Status == 'approved') {
 			const profEmbed = new EmbedBuilder()
 				.setTitle('VTA Profile Locked 🔒')
 				.setColor('Red')
-				.setDescription('Your VTA Profile is either pending or already approved. Use the apply command to know more.');
+				.setDescription('Your VTA Profile is either pending or already approved. Use the apply command to revert.');
 
 			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 		}
@@ -48,18 +58,18 @@ module.exports = {
 				const failEmbed = new EmbedBuilder()
 					.setColor(0xE0115F)
 					.setTitle('Failed to read image from discord')
-					.setDescription('Image validation failed. Please upload a image! Commonly supported formats are JPEG and PNG.');
+					.setDescription('Image validation failed. Please upload an image! Commonly supported formats are JPEG and PNG.');
 
 				return await interaction.reply({ embeds: [failEmbed], ephemeral: true });
 			}
+
+			userProfile.AvatarIcon = avatarpng.url;
+			userProfile.save();
 
 			const sucEmbed = new EmbedBuilder()
 				.setColor(0x50C878)
 				.setTitle('Success!')
 				.setDescription('Your image was successfully saved into the database.');
-
-			userProfile.AvatarIcon = avatarpng.url;
-			userProfile.save();
 
 			await interaction.reply({ embeds:[sucEmbed], ephemeral:true });
 		}
