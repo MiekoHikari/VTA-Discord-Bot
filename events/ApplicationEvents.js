@@ -116,7 +116,7 @@ module.exports = {
 					.addFields(
 						{ name: 'User:', value: `${interaction.user.tag}`, inline: true },
 						{ name: 'Account Creation Date:', value: `${dayjs(interaction.user.createdAt)}`, inline: true },
-						{ name: 'Server Join Date:', value: `${dayjs(guildMember.createdAt)}` },
+						{ name: 'Server Join Date:', value: `${dayjs(guildMember.joinedAt)}` },
 						{ name: 'Boosting since:', value: `${dayjs(guildMember.premiumSince)}` },
 					);
 
