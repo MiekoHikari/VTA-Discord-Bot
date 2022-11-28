@@ -7,7 +7,7 @@ const port = 10000;
 
 app.get('/', (req, res) => {
 	// 200 status code means OK
-	res.status().send(200);
+	res.sendStatus(200);
 });
 
 app.listen(port, () => {
