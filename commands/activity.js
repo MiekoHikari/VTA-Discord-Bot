@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js');
 const Levels = require('discord-xp');
 
 module.exports = {
@@ -12,7 +12,24 @@ module.exports = {
 				.addUserOption(option => option.setName('check-target').setDescription('The user to check').setRequired(true))
 				.addBooleanOption(option =>
 					option.setName('ephemeral')
-						.setDescription('Whether to hide the reply or not {By Default True}'))),
+						.setDescription('Whether to hide the reply or not {By Default True}')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('modify')
+				.setDescription('Modify someone\'s level')
+				.addUserOption(option => option.setName('mod-target').setDescription('The user to modify').setRequired(true))
+				.addStringOption(option =>
+					option.setName('mod-type')
+						.setDescription('Modification Type')
+						.setRequired(true)
+						.addChoices(
+							{ name: 'Add Level', value: 'add' },
+							{ name: 'Subtract Level', value: 'subtract' },
+						))
+				.addIntegerOption(option =>
+					option.setName('level-amount')
+						.setDescription('Amount of level to add and subtract from the user')
+						.setRequired(true))),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'check') {
 			const userMention = await interaction.options.getUser('check-target');
@@ -47,6 +64,38 @@ module.exports = {
 			}
 
 			await interaction.reply({ embeds: [Lembed], ephemeral: ephemeralOption });
+		}
+
+		if (interaction.options.getSubcommand() === 'modify') {
+			// Validate the interaction user has permission to modify the profile.
+			if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+				return interaction.reply({ content: 'You do not have permission to modify this profile.', ephemeral: true });
+			}
+
+			// Parse the command
+			const user = await interaction.options.getUser('mod-target');
+			const type = await interaction.options.getString('mod-type');
+			const amount = await interaction.options.getInteger('level-amount');
+
+			// Setup embed
+			// eslint-disable-next-line prefer-const
+			let embed = new EmbedBuilder()
+				.setColor('DarkGold')
+				.setTitle(`${type} ${user.tag}: ${amount} levels`);
+
+			// Add or Subtract levels?
+			if (type == 'add') {
+				await Levels.appendLevel(user.id, interaction.guildId, amount);
+				embed.setDescription('Levels successfully added.');
+
+				return await interaction.reply({ ephemeral: true, embeds: [embed] });
+			}
+			else if (type == 'subtract') {
+				await Levels.subtractLevel(user.id, interaction.guildId, amount);
+				embed.setDescription('Levels successfully removed.');
+
+				return await interaction.reply({ ephemeral: true, embeds: [embed] });
+			}
 		}
 	},
 };
