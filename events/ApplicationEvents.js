@@ -1,4 +1,4 @@
-const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, TextInputBuilder, ModalBuilder, TextInputStyle } = require('discord.js');
+const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, TextInputBuilder, ModalBuilder, TextInputStyle, PermissionsBitField } = require('discord.js');
 const Application = require('../Database/Schemas/application');
 const mongoose = require('mongoose');
 const dayjs = require('dayjs');
@@ -198,13 +198,6 @@ module.exports = {
 			}
 
 			if (interaction.customId == 'denyProfile') {
-				// Get the necessary information
-				const userProfile = await Application.findOne({ _id: interaction.message.content });
-
-				// Update the database
-				userProfile.Status = 'Not Applied';
-				userProfile.save();
-
 				// Create a new modal
 				const modal = new ModalBuilder()
 					.setCustomId('reasonModal')
@@ -229,40 +222,148 @@ module.exports = {
 		}
 
 		// The modal submission collection
-		if (interaction.customId == 'reasonModal') {
-			// Defer the reply
-			await interaction.deferUpdate();
+		if (interaction.isModalSubmit()) {
+			if (interaction.customId == 'reasonModal') {
+				// Defer the reply
+				await interaction.deferUpdate();
 
-			// Get the necessary information
-			const userProfile = await Application.findOne({ _id: interaction.message.content });
-			const reason = interaction.fields.getTextInputValue('reasonInput');
-			const guildMember = await interaction.guild.members.fetch(userProfile.userID);
+				// Get the necessary information
+				const userProfile = await Application.findOne({ _id: interaction.message.content });
+				const reason = interaction.fields.getTextInputValue('reasonInput');
+				const guildMember = await interaction.guild.members.fetch(userProfile.userID);
 
-			// Create an embed for the user to see
-			const reEmbed = new EmbedBuilder()
-				.setColor(0xE0115F)
-				.setTitle('Your profile was rejected.')
-				.setDescription(`${reason}`)
-				.setTimestamp();
+				// Update the database
+				userProfile.Status = 'Not Applied';
+				userProfile.save();
 
-			// Send the guild member the DM
-			try {
-				guildMember.send({ embeds: [reEmbed] });
+				// Remove the VTuber Roles
+				await guildMember.roles.remove(process.env.VTUBERROLE, `VTuber Profile rejected by ${interaction.user.tag}`);
+
+				// Create an embed for the user to see
+				const reEmbed = new EmbedBuilder()
+					.setColor(0xE0115F)
+					.setTitle('Your profile was rejected.')
+					.setDescription(`${reason}`)
+					.setTimestamp();
+
+				// Send the guild member the DM
+				try {
+					guildMember.send({ embeds: [reEmbed] });
+				}
+				catch (err) {
+					await interaction.channel.send({ content: 'The bot cannot reach the user. Their DMs might be closed.' });
+				}
+
+				const funButton = new ActionRowBuilder()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId('funbuttondoesabsolutelynothing')
+							.setLabel(`Profile rejected by ${interaction.user.tag}!`)
+							.setStyle(ButtonStyle.Danger),
+					);
+
+				// Update the message to remove their database profile id from content and update the component
+				await interaction.editReply({ content: `**Reason:** ${reason}`, components: [funButton] });
 			}
-			catch (err) {
-				await interaction.channel.send({ content: 'The bot cannot reach the user. Their DMs might be closed.' });
+
+			if (interaction.customId == 'revokeModal') {
+				// Parse the inputs
+				const reason = interaction.fields.getTextInputValue('reasonInput');
+				const userIDi = interaction.fields.getTextInputValue('userIDinput');
+
+				// Get the necessary information
+				const userProfile = await Application.findOne({ userID: userIDi });
+				const guildMember = await interaction.guild.members.fetch(userIDi);
+
+				// Validate that the profile exists
+				if (!userProfile) {
+					return interaction.reply({ content: 'The profile does not exist', ephemeral:true });
+				}
+
+				// Validate that the profile is approved
+				if (userProfile.Status != 'approved') {
+					return interaction.reply({ content: 'The user does not have an approved profile!', ephemeral: true });
+				}
+
+				// Update the database
+				userProfile.Status = 'Not Applied';
+				userProfile.save();
+
+				// Remove the VTuber Roles
+				await guildMember.roles.remove(process.env.VTUBERROLE, `VTuber Profile revoked by ${interaction.user.tag} for ${reason}`);
+
+				// Create an embed for the user to see
+				const reEmbed = new EmbedBuilder()
+					.setColor(0xE0115F)
+					.setTitle('Your profile was revoked.')
+					.setDescription(`${reason}`)
+					.setTimestamp();
+
+				// Send the guild member the DM
+				try {
+					guildMember.send({ embeds: [reEmbed] });
+				}
+				catch (err) {
+					await interaction.user.send({ content: 'The bot cannot reach the user. Their DMs might be closed.' });
+				}
+
+				// Give confirmation to the mod
+				await interaction.reply({ content: 'Profile revoked successfully', ephemeral: true });
 			}
+		}
 
-			const funButton = new ActionRowBuilder()
-				.addComponents(
-					new ButtonBuilder()
-						.setCustomId('funbuttondoesabsolutelynothing')
-						.setLabel(`Profile rejected by ${interaction.user.tag}!`)
-						.setStyle(ButtonStyle.Danger),
-				);
+		// If interaction is a context menu
+		if (interaction.isUserContextMenuCommand()) {
+			if (interaction.commandName == 'Revoke Application') {
+				// Check if user has permission
+				if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+					return interaction.reply({ content: 'You do not have permission to modify this profile.', ephemeral: true });
+				}
 
-			// Update the message to remove their database profile id from content and update the component
-			await interaction.editReply({ content: `reason ${reason}`, components: [funButton] });
+				// Get the necessary information
+				const targetUser = interaction.targetUser;
+				const userProfile = await Application.findOne({ userID: targetUser.id });
+
+				// Validate that the profile exists
+				if (!userProfile) {
+					return interaction.reply({ content: 'The profile does not exist', ephemeral:true });
+				}
+
+				// Validate that the profile is approved
+				if (userProfile.Status != 'approved') {
+					return interaction.reply({ content: 'The user does not have an approved profile!', ephemeral: true });
+				}
+
+				// Ask for the reason (required)
+				// Create a new modal
+				const modal = new ModalBuilder()
+					.setCustomId('revokeModal')
+					.setTitle(`Revoking ${targetUser.username}'s VTuber Profile`);
+
+				// The input
+				const responseModal = new TextInputBuilder()
+					.setCustomId('reasonInput')
+					.setLabel('Revoke Reason')
+					.setStyle(TextInputStyle.Paragraph)
+					.setRequired(true);
+
+				const userIDsave = new TextInputBuilder()
+					.setCustomId('userIDinput')
+					.setLabel('DO NOT CHANGE')
+					.setStyle(TextInputStyle.Short)
+					.setRequired(true)
+					.setValue(`${targetUser.id}`);
+
+				// The Row
+				const firstActionRow = new ActionRowBuilder().addComponents(responseModal);
+				const secondActionRow = new ActionRowBuilder().addComponents(userIDsave);
+
+				// Add the row to the modal
+				modal.addComponents(firstActionRow, secondActionRow);
+
+				// Show the modal
+				return await interaction.showModal(modal);
+			}
 		}
 	},
 };
