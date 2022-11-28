@@ -11,10 +11,14 @@ const Levels = require('discord-xp');
 const LevelsDB = require('../Database/Schemas/levels.js');
 const schedule = require('node-schedule');
 
+const deployCommands = require('../deploy-commands');
+
 module.exports = {
 	name: Events.ClientReady,
 	once: true,
 	async execute(client) {
+		deployCommands.execute();
+
 		await mongoose.connect(process.env.DBCONNECTIONSTRING, {
 			keepAlive: true,
 		});
