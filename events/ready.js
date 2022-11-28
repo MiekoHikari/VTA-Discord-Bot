@@ -53,16 +53,18 @@ module.exports = {
 				try { member = await guild.members.fetch(LevelProfile.userID); }
 				catch (err) { return; }
 
+				const rolesCache = await member.roles.cache;
+
 				if (duration > 5) {
-					if (member.roles.cache.has(process.env.VTUBERROLE)) {
+					if (rolesCache.has(process.env.VTUBERROLE)) {
 						member.roles.remove(process.env.VTUBERROLE, 'inactivity for over 5 days');
 						member.send('You have lost your vtuber role due to inactivity for over 5 days, you may recover it by interacting with VTA.');
 					}
 				}
 				else if (duration < 5) {
-					if (!member.roles.cache.has(process.env.VTUBERROLE)) {
-						member.roles.add(process.env.VTUBERROLE, 'User regained activity!');
-						member.send('Welcome back! You\'ve gained your vtuber role!');
+					if (!rolesCache.has(process.env.VTUBERROLE)) {
+						await member.roles.add(process.env.VTUBERROLE, 'User regained activity!');
+						return await member.send('Welcome back! You\'ve gained your vtuber role!');
 					}
 				}
 			});
