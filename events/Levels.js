@@ -7,14 +7,17 @@ const excludedId = ['757259446110912552', '765201358776303636', '747857158976176
 module.exports = {
 	name: Events.MessageCreate,
 	async execute(message) {
+		// Basic Validation
 		if (message.author.bot) return;
 		if (message.channel.type == 'dm') return;
 		if (message.content.length < 5) return;
 
+		// If the message is in the prementioned IDs, then ignore.
 		if (excludedId.includes(`${message.channel.id}`, 0)) {
 			return;
 		}
 
+		// If the user is in cooldown, ignore
 		if (cooldown.has(message.author.id)) {
 			return;
 		}
@@ -27,6 +30,7 @@ module.exports = {
 			}
 		}
 
+		// Add the user to a cooldown
 		cooldown.add(message.author.id);
 		setTimeout(() => {
 			cooldown.delete(message.author.id);

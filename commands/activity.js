@@ -32,9 +32,12 @@ module.exports = {
 						.setRequired(true))),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'check') {
+			// Parse the command
 			const userMention = await interaction.options.getUser('check-target');
 			const target = await Levels.fetch(userMention.id, interaction.guildId);
+			const ephemeralOption = await interaction.options.getBoolean('ephemeral') ?? true;
 
+			// Validate the command
 			if (!target) {
 				const failEmbed = new EmbedBuilder()
 					.setColor('Gold')
@@ -46,6 +49,7 @@ module.exports = {
 				return interaction.reply({ embeds: [failEmbed], ephemeral: true });
 			}
 
+			// Constuct the embed
 			const Lembed = new EmbedBuilder()
 				.setColor('Random')
 				.setTitle(`${userMention.username}`)
@@ -55,15 +59,8 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
-			let ephemeralOption = true;
-			if (interaction.options.getBoolean('ephemeral') == null) {
-				ephemeralOption = true;
-			}
-			else if (interaction.options.getBoolean('ephemeral') == false) {
-				ephemeralOption = false;
-			}
-
-			await interaction.reply({ embeds: [Lembed], ephemeral: ephemeralOption });
+			// Return a reply
+			return await interaction.reply({ embeds: [Lembed], ephemeral: ephemeralOption });
 		}
 
 		if (interaction.options.getSubcommand() === 'modify') {

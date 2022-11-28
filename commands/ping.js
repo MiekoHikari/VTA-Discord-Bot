@@ -9,11 +9,16 @@ module.exports = {
 			option.setName('ephemeral')
 				.setDescription('Whether to hide the reply or not {By Default True}')),
 	async execute(interaction) {
-		const ephemeral = interaction.options.getBoolean('ephemeral') ?? true;
+		// Parse the command
+		const ephemeralOption = interaction.options.getBoolean('ephemeral') ?? true;
 
-		const sent = await interaction.deferReply({ fetchReply: true, ephemeral: ephemeral });
+		// Defer the reply to find the RTL
+		const sent = await interaction.deferReply({ fetchReply: true, ephemeral: ephemeralOption });
+
+		// Get the WebSocket Heartbeat
 		const wsheartbeat = interaction.client.ws.ping;
 
+		// Create a ping using the constructors
 		const pingEmbed = new EmbedBuilder()
 			.setColor(0xE0115F)
 			.setTitle('Pong! 🏓')
@@ -25,6 +30,7 @@ module.exports = {
 			.setTimestamp()
 			.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
+		// Edit the deferred reply and update the response;
 		await interaction.editReply({ embeds: [pingEmbed] });
 	},
 };

@@ -16,9 +16,12 @@ module.exports = {
 				.setName('ephemeral')
 				.setDescription('Post the profile privately or publicly.')),
 	async execute(interaction) {
+		// get necessary information
 		const comUser = interaction.options.getUser('user');
 		const userProfile = await Application.findOne({ userID: comUser.id });
+		let ephemeralOption = await interaction.options.getBoolean('ephemeral') ?? true;
 
+		// Validate if user is in our database
 		if (!userProfile) {
 			const profEmbed = new EmbedBuilder()
 				.setTitle('Profile not found! ⚠️')
@@ -28,6 +31,7 @@ module.exports = {
 			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 		}
 
+		// Validate if user is applied
 		if (userProfile.Status == 'Not Applied') {
 			const profEmbed = new EmbedBuilder()
 				.setTitle('Profile not applied! ⚠️')
@@ -37,12 +41,9 @@ module.exports = {
 			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 		}
 
-		let ephemerals = true;
+		// If the user is pending an application and the interaction user is the owner of the profile
 		if (userProfile.Status == 'pending') {
-			if (interaction.user.id == userProfile.userID) {
-				ephemerals = true;
-			}
-			else {
+			if (!interaction.user.id == userProfile.userID) {
 				const profEmbed = new EmbedBuilder()
 					.setTitle('Profile not applied! ⚠️')
 					.setColor('Red')
@@ -50,9 +51,12 @@ module.exports = {
 
 				return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 			}
+			else {
+				ephemeralOption = true;
+			}
 		}
-		else { ephemerals = interaction.options.getBoolean('ephemeral'); }
 
+		// Foundation Embed
 		// eslint-disable-next-line prefer-const
 		let profEmbed = new EmbedBuilder()
 			.setColor(0xE0115F)
@@ -62,6 +66,7 @@ module.exports = {
 			.setTimestamp()
 			.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
+		// Construct the user profile based on the information we have collected
 		if (!(userProfile.YouTube == 'None')) {
 			profEmbed.addFields({ name: 'YouTube Channel', value: `${userProfile.YouTube}`, inline: true });
 		}
@@ -80,6 +85,7 @@ module.exports = {
 
 		profEmbed.setImage(`${userProfile.AvatarIcon}`);
 
-		await interaction.reply({ embeds: [profEmbed], ephemeral: ephemerals });
+		// Send the reply
+		await interaction.reply({ embeds: [profEmbed], ephemeral: ephemeralOption });
 	},
 };

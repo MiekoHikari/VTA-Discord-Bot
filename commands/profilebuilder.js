@@ -21,8 +21,10 @@ module.exports = {
 						.setRequired(true),
 				)),
 	async execute(interaction) {
+		// Get the user profile
 		const userProfile = await Application.findOne({ userID: interaction.user.id });
 
+		// Validate the user profile
 		if (!userProfile) {
 			const noProfileRow = new ActionRowBuilder()
 				.addComponents(
@@ -39,9 +41,11 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
+			// Create a new profile if user does not exist
 			return await interaction.reply({ embeds: [noProfileEmbed], components: [noProfileRow], ephemeral: true });
 		}
 
+		// Check  if the user profile is locked
 		if (userProfile.Status == 'pending' || userProfile.Status == 'approved') {
 			const profEmbed = new EmbedBuilder()
 				.setTitle('VTA Profile Locked 🔒')
@@ -51,9 +55,11 @@ module.exports = {
 			return await interaction.reply({ embeds: [profEmbed], ephemeral: true });
 		}
 
+		// Check if the command is for uploading an avatar
 		if (interaction.options.getSubcommand() === 'avatar') {
 			const avatarpng = interaction.options.getAttachment('avatarpng');
 
+			// Validate the image (if discord regonizes that this is an image)
 			if (!avatarpng.contentType.startsWith('image')) {
 				const failEmbed = new EmbedBuilder()
 					.setColor(0xE0115F)
@@ -63,6 +69,7 @@ module.exports = {
 				return await interaction.reply({ embeds: [failEmbed], ephemeral: true });
 			}
 
+			// Save the avatar in the database for later use
 			userProfile.AvatarIcon = avatarpng.url;
 			userProfile.save();
 
@@ -71,9 +78,11 @@ module.exports = {
 				.setTitle('Success!')
 				.setDescription('Your image was successfully saved into the database.');
 
+			// Let the user know that the data is saved.
 			await interaction.reply({ embeds:[sucEmbed], ephemeral:true });
 		}
 
+		// Check if the command is for launching the profile builder.
 		if (interaction.options.getSubcommand() === 'menu') {
 			const meEmbed = new EmbedBuilder()
 				.setColor(0x50C878)
