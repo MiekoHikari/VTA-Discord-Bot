@@ -79,7 +79,6 @@ module.exports = {
 		}
 
 		profEmbed.setImage(`${userProfile.AvatarIcon}`);
-		profEmbed.addFields({ name: 'Profile Status', value: `${userProfile.Status}` });
 
 		await interaction.reply({ embeds: [profEmbed], ephemeral: ephemerals });
 	},
