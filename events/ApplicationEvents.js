@@ -21,7 +21,7 @@ module.exports = {
 					const createDialog = new EmbedBuilder()
 						.setColor(0xE0115F)
 						.setTitle('Your Profile is ready for customization!')
-						.setDescription('Run the apply command again to customize your profile!')
+						.setDescription('You can now run application commands!')
 						.setTimestamp()
 						.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
@@ -61,7 +61,7 @@ module.exports = {
 					const embed = new EmbedBuilder()
 						.setColor(0xE0115F)
 						.setTitle('Uh oh! You do not have an approved profile :C')
-						.setDescription('Use the apply command to submit an application!');
+						.setDescription('Use Application commands to submit an application!');
 					await interaction.update({ embeds: [embed], ephemeral: true });
 				}
 			}

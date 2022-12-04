@@ -3,6 +3,7 @@ const { Events, EmbedBuilder } = require('discord.js');
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
+		if (!interaction.isChatInputCommand()) return;
 
 		if (interaction.customId == 'doingthecat') {
 			const lEmbed = new EmbedBuilder()
@@ -12,8 +13,5 @@ module.exports = {
 
 			interaction.reply({ embeds: [lEmbed] });
 		}
-
-		if (!interaction.isChatInputCommand()) return;
-
 	},
 };
