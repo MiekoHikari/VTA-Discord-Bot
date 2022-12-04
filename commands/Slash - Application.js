@@ -67,6 +67,17 @@ module.exports = {
 			return interaction.editReply({ embeds: pendingEmbed, ephemeral: true });
 		}
 
+		if (userProfile.Status === 'Inactive') {
+			const pendingEmbed = new EmbedBuilder()
+				.setColor('Red')
+				.setTitle('Don\'t worry, you\'ll receive your roles soon!')
+				.setDescription('We automatically remove VTubers who are inactive for over 5 days but they regain their roles back if they interact again! The bot checks for activity every 5 minutes to reduce the load on the database.')
+				.setTimestamp()
+				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
+
+			return interaction.editReply({ embeds: pendingEmbed, ephemeral: true });
+		}
+
 		// Check if user run the /application enroll command
 		if (interaction.options.getSubcommand() === 'enroll') {
 			// If the user does have a profile in the database but is approved, tell them they can't apply unless they revert their profile

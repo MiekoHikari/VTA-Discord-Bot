@@ -33,13 +33,13 @@ module.exports = {
 			const apps = await Application.find({});
 
 			apps.forEach(async (lications) => {
-				const LevelProfile = await LevelsDB.findOne({ userID: lications.userID });
-
-				if (!LevelProfile) {
+				if (lications.Status != 'approved' || lications.Status != 'Inactive') {
 					return;
 				}
 
-				if (lications.Status != 'approved') {
+				const LevelProfile = await LevelsDB.findOne({ userID: lications.userID });
+
+				if (!LevelProfile) {
 					return;
 				}
 
@@ -55,18 +55,27 @@ module.exports = {
 
 				const rolesCache = await member.roles.cache;
 
-				if (duration > 5) {
-					if (rolesCache.has(process.env.VTUBERROLE)) {
-						member.roles.remove(process.env.VTUBERROLE, 'inactivity for over 5 days');
-						member.send('You have lost your vtuber role due to inactivity for over 5 days, you may recover it by interacting with VTA.');
+				if (lications.Status == 'approved') {
+					if (duration > 5) {
+						if (rolesCache.has(process.env.VTUBERROLE)) {
+							lications.Status == 'Inactive';
+							member.roles.remove(process.env.VTUBERROLE, 'inactivity for over 5 days');
+							member.send('You have lost your vtuber role due to inactivity for over 5 days, you may recover it by interacting with VTA.');
+						}
 					}
 				}
-				else if (duration < 5) {
-					if (!rolesCache.has(process.env.VTUBERROLE)) {
-						await member.roles.add(process.env.VTUBERROLE, 'User regained activity!');
-						return await member.send('Welcome back! You\'ve gained your vtuber role!');
+
+				if (lications.Status == 'Inactive') {
+					if (duration < 5) {
+						if (!rolesCache.has(process.env.VTUBERROLE)) {
+							lications.Status == 'approved';
+							await member.roles.add(process.env.VTUBERROLE, 'User regained activity!');
+							return await member.send('Welcome back! You\'ve gained your vtuber role!');
+						}
 					}
 				}
+
+				lications.save();
 			});
 		});
 	},
