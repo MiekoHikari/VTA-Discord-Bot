@@ -196,6 +196,23 @@ module.exports = {
 		}
 
 		if (interaction.options.getSubcommand() === 'delete') {
+			if (userProfile.Status == 'approved') {
+				const validEmbed = new EmbedBuilder()
+					.setColor(0xE0115F)
+					.setTitle('You already have an approved profile! ✅')
+					.setDescription('Use the profile command to see your information! If you want to change your profile, you may need to go through the application procedure and **you may lose your VTuber Role**. Are you sure?');
+
+				const createRow = new ActionRowBuilder()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId('reapply')
+							.setLabel('I want to reapply 🗃️')
+							.setStyle(ButtonStyle.Secondary),
+					);
+
+				return await interaction.editReply({ embeds: [validEmbed], ephemeral: true, components: [createRow] });
+			}
+
 			await userProfile.remove();
 
 			const removeEmbed = new EmbedBuilder()
