@@ -13,12 +13,12 @@ module.exports = {
 				.setDescription('Enroll into the VTA\'s VTuber Database'))
 		.addSubcommandGroup(subcommandgroup =>
 			subcommandgroup
-				.setName('profilebuilder')
-				.setDescription('VTA\'s very own profile building system for their candidates!')
+				.setName('builder')
+				.setDescription('VTA\'s very own app building system for their candidates!')
 				.addSubcommand(subcommand =>
 					subcommand
 						.setName('pb-menu')
-						.setDescription('Bring up the profile builder menu'))
+						.setDescription('Bring up the app builder menu'))
 				.addSubcommand(subcommand =>
 					subcommand
 						.setName('pb-avatar')
@@ -26,7 +26,7 @@ module.exports = {
 						.addAttachmentOption(option =>
 							option
 								.setName('avatarpng')
-								.setDescription('Upload your VTuber Avatar')
+								.setDescription('Upload your VTuber Avatar!')
 								.setRequired(true),
 						)))
 		.addSubcommand(subcommand =>
