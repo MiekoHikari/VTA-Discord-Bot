@@ -19,6 +19,8 @@ CLIENTID="<Application Client ID>"
 
 # For Development Guild
 GUILDID="<Guild ID>"
+VTUBERROLE="<VTUBER ROLE ID>"
+APPLICATIONCHANNEL="<APPLICATION CHANNEL ID>"
 
 # For Applications
 DBCONNECTIONSTRING="<MongoDB Connection String>"
