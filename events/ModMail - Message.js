@@ -31,6 +31,13 @@ module.exports = {
 
 		let modmailUser = await modmailDB.findOne({ userID: userIDs });
 
+		try {
+			const UserStatus = modmailUser.Status;
+		}
+		catch (error) {
+			return;
+		}
+
 		if (!message.guild) {
 			if (!modmailUser) {
 				await message.channel.send('Couldn\'t find user in mmDB, creating...').then(async remessage => {
@@ -49,7 +56,7 @@ module.exports = {
 				});
 			}
 
-			if (modmailUser.Status == 'Closed') {
+			if (UserStatus == 'Closed') {
 
 				const ConfirmButton = new ButtonBuilder()
 					.setCustomId('mm-confirm')
@@ -67,7 +74,7 @@ module.exports = {
 				message.channel.send({ embeds: [aEmbed], components: [confirmRow], content: `${message.id}` });
 			}
 
-			if (modmailUser.Status == 'Open') {
+			if (UserStatus == 'Open') {
 
 				const ModMailServer = await message.client.guilds.fetch(process.env.GUILDID);
 				const ModMailChannel = await ModMailServer.channels.fetch(process.env.MODMAILLOGCHANNEL);
@@ -96,7 +103,7 @@ module.exports = {
 		if (message.guild) {
 			if (!(message.channel.isThread())) { return; }
 			if (!modmailUser) { return message.channel.send('Please send atleast 1 DM to me to use modmail.'); }
-			if (modmailUser.Status == 'Open') {
+			if (UserStatus == 'Open') {
 				if (message.channel.parentId == process.env.MODMAILLOGCHANNEL) {
 					const userChannel = await message.client.channels.fetch(modmailUser.channelID);
 
