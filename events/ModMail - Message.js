@@ -21,6 +21,7 @@ module.exports = {
 
 		let userIDs = null;
 		if (message.guild) {
+			if (!(message.channel.isThread())) { return; }
 			const channelname = message.channel.name;
 			userIDs = channelname.slice(0, 18).replace(/\s/g, '');
 		}
@@ -93,9 +94,8 @@ module.exports = {
 		}
 
 		if (message.guild) {
-			if (message.channel.parentId == process.env.MODMAILLOGCHANNEL) {
-				if (!modmailUser) { return message.channel.send('Please send atleast 1 DM to me to use modmail.'); }
-			}
+			if (!(message.channel.isThread())) { return; }
+			if (!modmailUser) { return message.channel.send('Please send atleast 1 DM to me to use modmail.'); }
 			if (modmailUser.Status == 'Open') {
 				if (message.channel.parentId == process.env.MODMAILLOGCHANNEL) {
 					const userChannel = await message.client.channels.fetch(modmailUser.channelID);
