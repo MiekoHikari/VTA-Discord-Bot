@@ -80,7 +80,7 @@ module.exports = {
 					.setTitle('Reported Message Details')
 					.setDescription('Details about the reported message and user')
 					.addFields(
-						{ name: 'Reported Message Content', value: ` ${message.content} `, inline: false },
+						{ name: 'Reported Message Content', value: `${message.content ?? 'Content is an attachment.'}`, inline: false },
 						{ name: 'Reported Channel', value: `<#${message.channelId}>`, inline: true },
 						{ name: 'Message Creation Date', value: `${Dayjs(message.createdTImestamp)}`, inline: true },
 						{ name: 'Message URL', value: `${message.url}`, inline: false },
