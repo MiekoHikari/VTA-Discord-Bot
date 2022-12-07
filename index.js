@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const port = 10000;
+const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
 
 app.get('/', (req, res) => {
 	// 200 status code means OK
@@ -13,14 +14,16 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
 	console.log(`VTA BOT listening on port ${port}`);
 });
-
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
-
 // eslint-disable-next-line no-unused-vars
 const dotenv = require('dotenv');
 dotenv.config();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessages] });
+const client = new Client({ partials: [Partials.Channel, Partials.Message, Partials.User], intents: [
+	GatewayIntentBits.Guilds,
+	GatewayIntentBits.MessageContent,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.DirectMessages,
+] });
 
 client.commands = new Collection();
 
