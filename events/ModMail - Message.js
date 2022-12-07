@@ -93,7 +93,9 @@ module.exports = {
 		}
 
 		if (message.guild) {
-			if (!modmailUser) { return message.channel.send('Please send atleast 1 DM to me to use modmail.'); }
+			if (message.channel.parentId == process.env.MODMAILLOGCHANNEL) {
+				if (!modmailUser) { return message.channel.send('Please send atleast 1 DM to me to use modmail.'); }
+			}
 			if (modmailUser.Status == 'Open') {
 				if (message.channel.parentId == process.env.MODMAILLOGCHANNEL) {
 					const userChannel = await message.client.channels.fetch(modmailUser.channelID);
