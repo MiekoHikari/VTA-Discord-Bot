@@ -9,8 +9,12 @@ module.exports = {
 	async execute(message) {
 		// Basic Validation
 		if (message.author.bot) return;
-		if (message.channel.type == 'dm') return;
+		if (message.channel.type == 'DM') return;
 		if (message.content.length < 5) return;
+
+		if (!message.guild) {
+			return;
+		}
 
 		// If the message is in the prementioned IDs, then ignore.
 		if (excludedId.includes(`${message.channel.id}`, 0)) {
