@@ -40,18 +40,14 @@ module.exports = {
 					newMail.addFields({ name: 'Last Created Thread', value: `<#${ModmailLastRecord}>`, inline: false });
 				}
 
-				const success = new EmbedBuilder()
-					.setColor('Green')
-					.setTitle('This chat is now linked with a staff channel!')
-					.setDescription('Every message and attachment you send is going to be sent to a staff channel. Rules applies here too.')
-					.setTimestamp();
-
 				const thread = await ModMailChannel.threads.create({
 					name: `${interaction.user.id} - ${interaction.user.username}`,
 					message: { embeds: [newMail] },
 				});
+
 				ModMailProfile.CurrentChannel = thread.id;
 				ModMailProfile.Status = 'Open';
+				await ModMailProfile.save();
 
 				ModMailChannel.createWebhook({
 					name: interaction.user.username,
@@ -69,7 +65,12 @@ module.exports = {
 						}
 					});
 
-				await ModMailProfile.save();
+				const success = new EmbedBuilder()
+					.setColor('Green')
+					.setTitle('This chat is now linked with a staff channel!')
+					.setDescription('Every message and attachment you send is going to be sent to a staff channel. Rules applies here too.')
+					.setTimestamp();
+
 				return interaction.message.edit({ content: null, embeds: [success], components: [] });
 			}
 		}
