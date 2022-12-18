@@ -34,7 +34,6 @@ module.exports = {
 				.setName('delete')
 				.setDescription('Suspend / Delete your VTuber Application')),
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral:true });
 		const userProfile = await Application.findOne({ userID: interaction.user.id });
 
 		if (!userProfile) {
@@ -53,7 +52,7 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
-			return await interaction.editReply({ embeds: [noProfileEmbed], components: [noProfileRow], ephemeral: true });
+			return await interaction.reply({ embeds: [noProfileEmbed], components: [noProfileRow], ephemeral: true });
 		}
 
 		if (userProfile.Status === 'pending') {
@@ -64,7 +63,7 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
-			return interaction.editReply({ embeds: pendingEmbed, ephemeral: true });
+			return interaction.reply({ embeds: pendingEmbed, ephemeral: true });
 		}
 
 		if (userProfile.Status === 'Inactive') {
@@ -75,7 +74,7 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
-			return interaction.editReply({ embeds: pendingEmbed, ephemeral: true });
+			return interaction.reply({ embeds: pendingEmbed, ephemeral: true });
 		}
 
 		// Check if user run the /application enroll command
@@ -95,7 +94,7 @@ module.exports = {
 							.setStyle(ButtonStyle.Secondary),
 					);
 
-				return await interaction.editReply({ embeds: [validEmbed], ephemeral: true, components: [createRow] });
+				return await interaction.reply({ embeds: [validEmbed], ephemeral: true, components: [createRow] });
 			}
 
 			// Validation Constructors / Messages
@@ -164,7 +163,7 @@ module.exports = {
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
 			// Respond to the interaction
-			return await interaction.editReply({ embeds: [validEmbed], components: [createRow], ephemeral: true });
+			return await interaction.reply({ embeds: [validEmbed], components: [createRow], ephemeral: true });
 		}
 
 		if (interaction.options.getSubcommand() === 'pb-menu') {
@@ -177,7 +176,7 @@ module.exports = {
 			const row = new ActionRowBuilder()
 				.addComponents(new ButtonBuilder().setCustomId('profilebuilder').setLabel('Launch Profile Builder 🚀').setStyle(ButtonStyle.Primary));
 
-			await interaction.editReply({ embeds: [meEmbed], components: [row], ephemeral: true });
+			await interaction.reply({ embeds: [meEmbed], components: [row], ephemeral: true });
 		}
 
 		if (interaction.options.getSubcommand() === 'pb-avatar') {
@@ -190,7 +189,7 @@ module.exports = {
 					.setTitle('Failed to read image from discord')
 					.setDescription('Image validation failed. Please upload an image! Commonly supported formats are JPEG and PNG.');
 
-				return await interaction.editReply({ embeds: [failEmbed], ephemeral: true });
+				return await interaction.reply({ embeds: [failEmbed], ephemeral: true });
 			}
 
 			// Save the avatar in the database for later use
@@ -203,7 +202,7 @@ module.exports = {
 				.setDescription('Your image was successfully saved into the database.');
 
 			// Let the user know that the data is saved.
-			await interaction.editReply({ embeds:[sucEmbed], ephemeral:true });
+			await interaction.reply({ embeds:[sucEmbed], ephemeral: true });
 		}
 
 		if (interaction.options.getSubcommand() === 'delete') {
@@ -221,7 +220,7 @@ module.exports = {
 							.setStyle(ButtonStyle.Secondary),
 					);
 
-				return await interaction.editReply({ embeds: [validEmbed], ephemeral: true, components: [createRow] });
+				return await interaction.reply({ embeds: [validEmbed], ephemeral: true, components: [createRow] });
 			}
 
 			await userProfile.remove();
@@ -233,7 +232,7 @@ module.exports = {
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
-			return interaction.editReply({ embeds: [removeEmbed], ephemeral: true });
+			return interaction.reply({ embeds: [removeEmbed], ephemeral: true });
 		}
 	},
 };
