@@ -180,7 +180,7 @@ module.exports = {
 			await interaction.editReply({ embeds: [meEmbed], components: [row], ephemeral: true });
 		}
 
-		if (interaction.options.getSubcommand() === 'avatar') {
+		if (interaction.options.getSubcommand() === 'pb-avatar') {
 			const avatarpng = interaction.options.getAttachment('avatarpng');
 
 			// Validate the image (if discord regonizes that this is an image)
