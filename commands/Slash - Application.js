@@ -190,7 +190,7 @@ module.exports = {
 					.setTitle('Failed to read image from discord')
 					.setDescription('Image validation failed. Please upload an image! Commonly supported formats are JPEG and PNG.');
 
-				return await interaction.reply({ embeds: [failEmbed], ephemeral: true });
+				return await interaction.editReply({ embeds: [failEmbed], ephemeral: true });
 			}
 
 			// Save the avatar in the database for later use
@@ -203,7 +203,7 @@ module.exports = {
 				.setDescription('Your image was successfully saved into the database.');
 
 			// Let the user know that the data is saved.
-			await interaction.reply({ embeds:[sucEmbed], ephemeral:true });
+			await interaction.editReply({ embeds:[sucEmbed], ephemeral:true });
 		}
 
 		if (interaction.options.getSubcommand() === 'delete') {
