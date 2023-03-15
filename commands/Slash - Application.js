@@ -120,7 +120,7 @@ module.exports = {
 			if (userProfile.YouTube != 'None' || userProfile.Twitch != 'None') { isPlat = yes; }
 
 			// Validate user activity
-			if (userLevel.level >= 10) {
+			if (userLevel.level >= 3) {
 				isActive = yes;
 			}
 
@@ -156,7 +156,7 @@ module.exports = {
 					{ name: 'Photo', value: `${isAvatar}`, inline: true },
 					{ name: 'Description', value: `${isDesc}`, inline: true },
 					{ name: 'Streaming Platform', value: `${isPlat}`, inline: true },
-					{ name: 'Server Activity Level 10', value: `${isActive}`, inline: true },
+					{ name: 'Server Activity Level 3', value: `${isActive}`, inline: true },
 					{ name: 'Server Membership 3 days', value: `${isMember}`, inline: true },
 				)
 				.setTimestamp()
