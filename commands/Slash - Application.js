@@ -98,8 +98,8 @@ module.exports = {
 			}
 
 			// Validation Constructors / Messages
-			const yes = '**✅ Saved**';
-			const no = '**❌ Pending**';
+			const yes = '**✅ Yes**';
+			const no = '**❌ No**';
 			const JoinDate = await dayjs(interaction.member.joinedTimestamp);
 			const NowDate = dayjs(Date.now());
 			const userLevel = await Levels.fetch(interaction.user.id, interaction.guildId);
@@ -125,7 +125,7 @@ module.exports = {
 			}
 
 			// Validate Member join Duration
-			if (NowDate.diff(JoinDate, 'day') >= 3) {
+			if (NowDate.diff(JoinDate, 'day') >= 14) {
 				isMember = yes;
 			}
 
@@ -152,12 +152,12 @@ module.exports = {
 				.setTitle('Application Requirements')
 				.setDescription('You will need to enter the necessary information before you can apply! You can always edit your profile before submission!')
 				.addFields(
-					{ name: 'Name', value: `${isName}`, inline: true },
-					{ name: 'Photo', value: `${isAvatar}`, inline: true },
-					{ name: 'Description', value: `${isDesc}`, inline: true },
-					{ name: 'Streaming Platform', value: `${isPlat}`, inline: true },
-					{ name: 'Server Activity Level 3', value: `${isActive}`, inline: true },
-					{ name: 'Server Membership 3 days', value: `${isMember}`, inline: true },
+					{ name: 'Name Saved?', value: `${isName}`, inline: true },
+					{ name: 'Photo Saved?', value: `${isAvatar}`, inline: true },
+					{ name: 'Description Saved?', value: `${isDesc}`, inline: true },
+					{ name: 'Streaming Platform Saved?', value: `${isPlat}`, inline: true },
+					{ name: 'Server Activity Level 3?', value: `${isActive}`, inline: true },
+					{ name: 'Server Membership 14 days?', value: `${isMember}`, inline: true },
 				)
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
