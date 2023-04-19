@@ -1,9 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Application = require('../Database/Schemas/application');
-
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
+const cloudinary = require('cloudinary').v2;
 
 const processing = new Set();
 
@@ -257,24 +254,8 @@ module.exports = {
 							return m.channel.send({ embeds: [failEmbed] });
 						}
 
-						const downloadImageToUrl = (url, filename) => {
-							let client = http;
-							if (url.toString().indexOf('https') === 0) {
-								client = https;
-							}
-							return new Promise((resolve, reject) => {
-								client.get(url, (res) => {
-									res.pipe(fs.createWriteStream(filename))
-										.on('error', reject)
-										.once('close', () => resolve(filename));
-								});
-							});
-						};
-
-						const expectedPath = `./Storage/Avatars/${interaction.member.id}.png`;
-
-						// eslint-disable-next-line no-unused-vars
-						const avatarPNG = await downloadImageToUrl(`${attachment.url}`, expectedPath);
+						const res = cloudinary.uploader.upload(attachment.url, { public_id: `${interaction.member.id}` });
+						res;
 
 						m.channel.send('*The cat snatches your PNG, shoves it in a briefcase and runs away* (Avatar Saved)');
 					}

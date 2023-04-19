@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const Application = require('../Database/Schemas/application');
+const cloudinary = require('cloudinary');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -45,7 +46,7 @@ module.exports = {
 		if (userProfile.Status == 'pending') {
 			if (!interaction.user.id == userProfile.userID) {
 				const profEmbed = new EmbedBuilder()
-					.setTitle('Profile not applied! ⚠️')
+					.setTitle('Profile not approved! ⚠️')
 					.setColor('Red')
 					.setDescription('For the safety of members, pending profile results must be ephemeral and only visible to the profile owner.');
 
@@ -83,7 +84,8 @@ module.exports = {
 			profEmbed.addFields({ name: 'TikTok', value: `${userProfile.TikTok}`, inline: true });
 		}
 
-		profEmbed.setImage(`${userProfile.AvatarIcon}`);
+		const url = cloudinary.url(`${comUser.id}`);
+		profEmbed.setImage(`${url}`);
 
 		// Send the reply
 		await interaction.reply({ embeds: [profEmbed], ephemeral: ephemeralOption });
