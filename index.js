@@ -11,6 +11,8 @@ app.get('/', (req, res) => {
 	res.status(200).send('OK');
 });
 
+app.use('/avatars', express.static(path.join(__dirname, 'Storage/Avatars')));
+
 app.listen(port, () => {
 	console.log(`VTA BOT listening on port ${port}`);
 });

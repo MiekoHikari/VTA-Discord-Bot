@@ -1,9 +1,17 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Application = require('../Database/Schemas/application');
 
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+const processing = new Set();
+
 module.exports = {
 	name: Events.InteractionCreate,
+	processing: processing,
 	async execute(interaction) {
+
 		// eslint-disable-next-line prefer-const
 		let userval = await Application.findOne({ userID: interaction.user.id });
 
@@ -65,11 +73,8 @@ module.exports = {
 				// eslint-disable-next-line prefer-const
 				let customEmbed = new EmbedBuilder()
 					.setColor(0x0F52BA)
-					.setTitle('Welcome to the profile builder!')
-					.setDescription('Complete all the necessary information to apply for the VTuber Role!')
-					.addFields(
-						{ name: 'AvatarURL', value: `${userval.AvatarIcon}` },
-					)
+					.setTitle('The PB Menu!')
+					.setDescription('Your Only and (probably) favorite tool to edit your VTA Candidate Information!')
 					.setTimestamp()
 					.setFooter({ text: 'If you run into any issues, please contact VTA Staff' });
 
@@ -220,11 +225,67 @@ module.exports = {
 			}
 
 			if (interaction.customId == 'avatarbut') {
+				processing.add(interaction.member.id);
+
 				const interEmbed = new EmbedBuilder()
 					.setColor(0x50C878)
-					.setTitle('Avatar Menu currently not supported 😯')
-					.setDescription('Currently there is no official support for getting attachments from a discord window, you will have to run the `profilebuilder avatar` command to update your avatar. Thank you for understanding.');
+					.setTitle('We have taken this to your DMs 💼')
+					.setDescription('"Don\'t take this personally, Its just how things are." If you haven\'t received a DM, please make sure your inbox is open!');
 				await interaction.reply({ embeds: [interEmbed], components: [row1, row2], ephemeral: true });
+
+				const dealer = await interaction.member.send('You have 1 minute, give me the goods 💸 (Your Avatar)');
+
+				const filter = (m) =>
+					m.author.id === interaction.member.id;
+
+				const collector = dealer.channel.createMessageCollector(filter, {
+					max: 1,
+					time: 60000,
+				});
+
+				collector.on('collect', async m => {
+					const attachment = m.attachments.first();
+
+					if (attachment) {
+						// Validate the image (if discord regonizes that this is an image)
+						if (!attachment.contentType.startsWith('image')) {
+							const failEmbed = new EmbedBuilder()
+								.setColor(0xE0115F)
+								.setTitle('Failed to read image from discord')
+								.setDescription('Image validation failed. Please upload an image! Commonly supported formats are JPEG and PNG.');
+
+							return m.channel.send({ embeds: [failEmbed] });
+						}
+
+						const downloadImageToUrl = (url, filename) => {
+							let client = http;
+							if (url.toString().indexOf('https') === 0) {
+								client = https;
+							}
+							return new Promise((resolve, reject) => {
+								client.get(url, (res) => {
+									res.pipe(fs.createWriteStream(filename))
+										.on('error', reject)
+										.once('close', () => resolve(filename));
+								});
+							});
+						};
+
+						const expectedPath = `./Storage/Avatars/${interaction.member.id}.png`;
+
+						// eslint-disable-next-line no-unused-vars
+						const avatarPNG = await downloadImageToUrl(`${attachment.url}`, expectedPath);
+
+						m.channel.send('*The cat snatches your PNG, shoves it in a briefcase and runs away* (Avatar Saved)');
+					}
+					else {
+						m.channel.send('This isn\'t what I asked for, please try again later');
+					}
+
+					collector.stop();
+				});
+
+				collector.on('end', () => processing.delete(interaction.member.id));
 			}
 		}
 

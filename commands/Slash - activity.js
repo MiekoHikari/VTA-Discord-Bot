@@ -66,7 +66,7 @@ module.exports = {
 		if (interaction.options.getSubcommand() === 'modify') {
 			// Validate the interaction user has permission to modify the profile.
 			if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-				return interaction.reply({ content: 'You do not have permission to modify this profile.', ephemeral: true });
+				return interaction.reply({ content: 'You do not have permission to modify this profile. [Mssing: ManageMessages]', ephemeral: true });
 			}
 
 			// Parse the command

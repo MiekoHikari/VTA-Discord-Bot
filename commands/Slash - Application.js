@@ -2,6 +2,7 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const Application = require('../Database/Schemas/application');
 const Levels = require('discord-xp');
 const dayjs = require('dayjs');
+const fs = require('fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -11,64 +12,50 @@ module.exports = {
 			subcommand
 				.setName('enroll')
 				.setDescription('Enroll into the VTA\'s VTuber Database'))
-		.addSubcommandGroup(subcommandgroup =>
-			subcommandgroup
-				.setName('builder')
-				.setDescription('VTA\'s very own app building system for their candidates!')
-				.addSubcommand(subcommand =>
-					subcommand
-						.setName('pb-menu')
-						.setDescription('Bring up the app builder menu'))
-				.addSubcommand(subcommand =>
-					subcommand
-						.setName('pb-avatar')
-						.setDescription('Upload your VTuber Avatar!')
-						.addAttachmentOption(option =>
-							option
-								.setName('avatarpng')
-								.setDescription('Upload your VTuber Avatar!')
-								.setRequired(true),
-						)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('delete')
 				.setDescription('Suspend / Delete your VTuber Application')),
 	async execute(interaction) {
+		// Look for user profile
 		const userProfile = await Application.findOne({ userID: interaction.user.id });
 
+		// If the user doesn't have a profile then let's ask them if they want to create one!
 		if (!userProfile) {
 			const noProfileRow = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
 						.setCustomId('create')
-						.setLabel('Create Profile!')
-						.setStyle(ButtonStyle.Danger),
+						.setLabel('Of Course!')
+						.setStyle(ButtonStyle.Success),
 				);
 
 			const noProfileEmbed = new EmbedBuilder()
 				.setColor(0xE0115F)
-				.setTitle('Create new profile?')
-				.setDescription('We can\'t find an existing profile under your userID! Would you like to create a new profile?')
+				.setTitle('We\'re glad you\'re interested!')
+				.setDescription('You\'re just **1 step away** from being a VTA Candidate! We just want to confirm, *do you really want to apply?*')
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
 			return await interaction.reply({ embeds: [noProfileEmbed], components: [noProfileRow], ephemeral: true });
 		}
 
+		// Check if the user's profile is pending approval
 		if (userProfile.Status === 'pending') {
 			const pendingEmbed = new EmbedBuilder()
 				.setColor('Red')
 				.setTitle('Your profile is locked 🔒')
-				.setDescription('Your Application is currently locked from any further modification. Please wait till you\'re approved or rejected.')
+				.setDescription('Your Application is currently locked from any further modification. Please wait until you\'ve been approved or rejected.')
 				.setTimestamp()
 				.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
 			return interaction.reply({ embeds: pendingEmbed, ephemeral: true });
 		}
 
+		// Check if the user is marked "inactive"
 		if (userProfile.Status === 'Inactive') {
 			const pendingEmbed = new EmbedBuilder()
-				.setColor('Red')
+				.setColor('Yellow')
 				.setTitle('Don\'t worry, you\'ll receive your roles soon!')
 				.setDescription('We automatically remove VTubers who are inactive for over 5 days but they regain their roles back if they interact again! The bot checks for activity every 5 minutes to reduce the load on the database.')
 				.setTimestamp()
@@ -113,8 +100,18 @@ module.exports = {
 			let isMember = no;
 			let canSubmit = false;
 
+			const path = `./Storage/Avatars/${interaction.member.id}.png`;
+
+			try {
+				if (fs.existsSync(path)) {
+					isAvatar = yes;
+				}
+			}
+			catch (err) {
+				console.error(err);
+			}
+
 			// Validate the applications
-			if (userProfile.AvatarIcon != 'None') { isAvatar = yes; }
 			if (userProfile.VTuberName != 'None') { isName = yes; }
 			if (userProfile.Description != 'None') { isDesc = yes; }
 			if (userProfile.YouTube != 'None' || userProfile.Twitch != 'None') { isPlat = yes; }
@@ -149,8 +146,8 @@ module.exports = {
 			// Create a embed
 			const validEmbed = new EmbedBuilder()
 				.setColor(0xE0115F)
-				.setTitle('Application Requirements')
-				.setDescription('You will need to enter the necessary information before you can apply! You can always edit your profile before submission!')
+				.setTitle('Candidate Requirements')
+				.setDescription('Before Submission all candidates must fill in the following submission and meet certain requirements:')
 				.addFields(
 					{ name: 'Name Saved?', value: `${isName}`, inline: true },
 					{ name: 'Photo Saved?', value: `${isAvatar}`, inline: true },
@@ -164,45 +161,6 @@ module.exports = {
 
 			// Respond to the interaction
 			return await interaction.reply({ embeds: [validEmbed], components: [createRow], ephemeral: true });
-		}
-
-		if (interaction.options.getSubcommand() === 'pb-menu') {
-
-			const meEmbed = new EmbedBuilder()
-				.setColor(0x50C878)
-				.setTitle('Welcome to the profile builder!')
-				.setDescription('The profile builder is a tool developed for the VTA candidates that are applying for the VTuber Role. If you want to get started, click the `Launch ProfileBuilder` Button!');
-
-			const row = new ActionRowBuilder()
-				.addComponents(new ButtonBuilder().setCustomId('profilebuilder').setLabel('Launch Profile Builder 🚀').setStyle(ButtonStyle.Primary));
-
-			await interaction.reply({ embeds: [meEmbed], components: [row], ephemeral: true });
-		}
-
-		if (interaction.options.getSubcommand() === 'pb-avatar') {
-			const avatarpng = interaction.options.getAttachment('avatarpng');
-
-			// Validate the image (if discord regonizes that this is an image)
-			if (!avatarpng.contentType.startsWith('image')) {
-				const failEmbed = new EmbedBuilder()
-					.setColor(0xE0115F)
-					.setTitle('Failed to read image from discord')
-					.setDescription('Image validation failed. Please upload an image! Commonly supported formats are JPEG and PNG.');
-
-				return await interaction.reply({ embeds: [failEmbed], ephemeral: true });
-			}
-
-			// Save the avatar in the database for later use
-			userProfile.AvatarIcon = avatarpng.url;
-			userProfile.save();
-
-			const sucEmbed = new EmbedBuilder()
-				.setColor(0x50C878)
-				.setTitle('Success!')
-				.setDescription('Your image was successfully saved into the database.');
-
-			// Let the user know that the data is saved.
-			await interaction.reply({ embeds:[sucEmbed], ephemeral: true });
 		}
 
 		if (interaction.options.getSubcommand() === 'delete') {
