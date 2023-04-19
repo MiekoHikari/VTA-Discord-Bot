@@ -2,12 +2,15 @@ const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = r
 const modmailDB = require('../Database/Schemas/modmail');
 const mongoose = require('mongoose');
 
+const { processing } = require('./ProfileBuilder');
+
 const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = {
 	name: Events.MessageCreate,
 	async execute(message) {
+		if (processing.has(message.author.id)) return;
 		if (message.author.bot) return;
 
 		let userIDs = null;
@@ -132,6 +135,7 @@ module.exports = {
 
 				const aEmbed = new EmbedBuilder()
 					.setColor('Fuchsia')
+					.setAuthor('VTA ModMail')
 					.setTitle('Would you like to create a new conversation?')
 					.setDescription('This will open a tunnel between you and the server moderators.')
 					.setTimestamp();
