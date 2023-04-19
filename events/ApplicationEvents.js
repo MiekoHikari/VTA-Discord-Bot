@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const dayjs = require('dayjs');
 require('dotenv').config();
 
+const cloudinary = require('cloudinary');
+
 // Constants
 let VTuberRoleID;
 let ApplicationReviewChannelID;
@@ -138,7 +140,8 @@ module.exports = {
 					profEmbed.addFields({ name: 'TikTok', value: `${userval.TikTok}`, inline: true });
 				}
 
-				profEmbed.setImage(`https://vta-discord-bot.onrender.com/avatars/${interaction.member.id}`);
+				const url = cloudinary.url(`${interaction.member.id}`);
+				profEmbed.setImage(`${url}`);
 
 				const userInfo = new EmbedBuilder()
 					.setColor('Random')

@@ -2,7 +2,8 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const Application = require('../Database/Schemas/application');
 const Levels = require('discord-xp');
 const dayjs = require('dayjs');
-const fs = require('fs');
+
+const cloudinary = require('cloudinary');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -92,7 +93,7 @@ module.exports = {
 			const userLevel = await Levels.fetch(interaction.user.id, interaction.guildId);
 
 			// Initial Application Requirements Booleans
-			let isAvatar = no;
+			let isAvatar = yes;
 			let isName = no;
 			let isDesc = no;
 			let isPlat = no;
@@ -100,16 +101,11 @@ module.exports = {
 			let isMember = no;
 			let canSubmit = false;
 
-			const path = `./Storage/Avatars/${interaction.member.id}.png`;
-
-			try {
-				if (fs.existsSync(path)) {
-					isAvatar = yes;
+			await cloudinary.v2.api.resource(`${interaction.member.id}`).catch(err => {
+				if (err) {
+					isAvatar = no;
 				}
-			}
-			catch (err) {
-				console.error(err);
-			}
+			});
 
 			// Validate the applications
 			if (userProfile.VTuberName != 'None') { isName = yes; }

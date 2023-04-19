@@ -6,12 +6,12 @@ const app = express();
 const port = 10000;
 const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
 
+const cloudinary = require('cloudinary').v2;
+
 app.get('/', (req, res) => {
 	// 200 status code means OK
 	res.status(200).send('OK');
 });
-
-app.use('/avatars', express.static(path.join(__dirname, 'Storage/Avatars')));
 
 app.listen(port, () => {
 	console.log(`VTA BOT listening on port ${port}`);
@@ -19,6 +19,13 @@ app.listen(port, () => {
 // eslint-disable-next-line no-unused-vars
 const dotenv = require('dotenv');
 dotenv.config();
+
+// Cloudinary Configuration
+cloudinary.config({
+	cloud_name: 'dzviu72kf',
+	api_key: process.env.CLOUDINARY_APIKEY,
+	api_secret: process.env.CLOUDINARY_APISECRET,
+});
 
 const client = new Client({ partials: [Partials.Channel, Partials.Message, Partials.User], intents: [
 	GatewayIntentBits.Guilds,
