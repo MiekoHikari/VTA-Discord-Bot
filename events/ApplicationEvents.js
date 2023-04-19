@@ -2,9 +2,20 @@ const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Text
 const Application = require('../Database/Schemas/application');
 const mongoose = require('mongoose');
 const dayjs = require('dayjs');
+require('dotenv').config();
 
-const dotenv = require('dotenv');
-dotenv.config();
+// Constants
+let VTuberRoleID;
+let ApplicationReviewChannelID;
+
+if (process.env.ENVTYPE === 'DEV') {
+	VTuberRoleID = '1045364663392665691';
+	ApplicationReviewChannelID = '1046124336140005459';
+}
+else {
+	VTuberRoleID = '747491394284945530';
+	ApplicationReviewChannelID = '940162459568832512';
+}
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -20,8 +31,11 @@ module.exports = {
 				if (!userval) {
 					const createDialog = new EmbedBuilder()
 						.setColor(0xE0115F)
-						.setTitle('Your Profile is ready for customization!')
-						.setDescription('You can now run application commands!')
+						.setTitle('Congrats! You are now in the Registry book!')
+						.setDescription('This is your first step towards getting VTA\'s official VTuber Role!')
+						.addFields(
+							{ name: 'What\'s Next?', value: 'Use the "Application Builder" to start filling up your brand new **profile!**' },
+						)
 						.setTimestamp()
 						.setFooter({ text: `Requested by: ${interaction.member.user.username}#${interaction.member.user.discriminator}`, iconURL: `${interaction.member.user.avatarURL()}` });
 
@@ -53,7 +67,7 @@ module.exports = {
 				if (cApp.Status == 'approved') {
 					cApp.Status = 'Not Applied';
 
-					interaction.member.roles.remove(process.env.VTUBERROLE, 'Manual Reapplication request');
+					interaction.member.roles.remove(VTuberRoleID, 'Manual Reapplication request');
 					cApp.save();
 					await interaction.update({ content: 'Your profile has been reverted!', ephemeral: true });
 				}
@@ -92,7 +106,7 @@ module.exports = {
 				const embed = new EmbedBuilder()
 					.setColor(0xE0115F)
 					.setTitle('User Profile Submitted')
-					.setDescription('Your application has been submitted successfully.');
+					.setDescription('Your profile has been sent to application officers for review.');
 
 				// get their database document
 				const userval = await Application.findOne({ userID: interaction.user.id });
@@ -150,7 +164,7 @@ module.exports = {
 					);
 
 				// Send the message to the application channel for approval and rejection
-				await interaction.guild.channels.cache.get(process.env.APPLICATIONCHANNEL).send({ content: `${userval._id}`, embeds: [profEmbed, userInfo], components: [rows] });
+				await interaction.guild.channels.cache.get(ApplicationReviewChannelID).send({ content: `${userval._id}`, embeds: [profEmbed, userInfo], components: [rows] });
 
 				// Update the status message and remove the buttons
 				await interaction.update({ embeds: [embed], ephemeral: true, components: [] });
@@ -167,7 +181,7 @@ module.exports = {
 				userProfile.save();
 
 				// Add the VTuber Roles
-				await guildMember.roles.add(process.env.VTUBERROLE, `VTuber Application approved by ${interaction.user.tag}`);
+				await guildMember.roles.add(VTuberRoleID, `VTuber Application approved by ${interaction.user.tag}`);
 
 				// Create an embed for the user
 				const reEmbed = new EmbedBuilder()
@@ -237,7 +251,7 @@ module.exports = {
 				userProfile.save();
 
 				// Remove the VTuber Roles
-				await guildMember.roles.remove(process.env.VTUBERROLE, `VTuber Profile rejected by ${interaction.user.tag}`);
+				await guildMember.roles.remove(VTuberRoleID, `VTuber Profile rejected by ${interaction.user.tag}`);
 
 				// Create an embed for the user to see
 				const reEmbed = new EmbedBuilder()
@@ -290,7 +304,7 @@ module.exports = {
 				userProfile.save();
 
 				// Remove the VTuber Roles
-				await guildMember.roles.remove(process.env.VTUBERROLE, `VTuber Profile revoked by ${interaction.user.tag} for ${reason}`);
+				await guildMember.roles.remove(VTuberRoleID, `VTuber Profile revoked by ${interaction.user.tag} for ${reason}`);
 
 				// Create an embed for the user to see
 				const reEmbed = new EmbedBuilder()
