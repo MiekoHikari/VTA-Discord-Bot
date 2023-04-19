@@ -138,7 +138,7 @@ module.exports = {
 					profEmbed.addFields({ name: 'TikTok', value: `${userval.TikTok}`, inline: true });
 				}
 
-				profEmbed.setImage(`${userval.AvatarIcon}`);
+				profEmbed.setImage(`https://vta-discord-bot.onrender.com/avatars/${interaction.member.id}`);
 
 				const userInfo = new EmbedBuilder()
 					.setColor('Random')

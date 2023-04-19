@@ -2,6 +2,7 @@ const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed
 const Application = require('../Database/Schemas/application');
 const Levels = require('discord-xp');
 const dayjs = require('dayjs');
+const fs = require('fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -99,8 +100,18 @@ module.exports = {
 			let isMember = no;
 			let canSubmit = false;
 
+			const path = `./Storage/Avatars/${interaction.member.id}.png`;
+
+			try {
+				if (fs.existsSync(path)) {
+					isAvatar = yes;
+				}
+			}
+			catch (err) {
+				console.error(err);
+			}
+
 			// Validate the applications
-			if (userProfile.AvatarIcon != 'None') { isAvatar = yes; }
 			if (userProfile.VTuberName != 'None') { isName = yes; }
 			if (userProfile.Description != 'None') { isDesc = yes; }
 			if (userProfile.YouTube != 'None' || userProfile.Twitch != 'None') { isPlat = yes; }
