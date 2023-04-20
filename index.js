@@ -50,28 +50,3 @@ for (const folder of eventsFolders) {
 
 // Log in to Discord with your client's token
 client.login(process.env.TOKEN);
-
-// Web Client
-const express = require('express');
-const app = express();
-
-app.enable('trust proxy');
-app.set('etag', false);
-app.use(express.static(__dirname + '/WebApp'));
-
-const publicPath = path.join(__dirname, 'WebApp/public');
-const publicFiles = fs.readdirSync(publicPath).filter(file => file.endsWith('.js'));
-
-for (const file of publicFiles) {
-	const filePath = path.join(publicPath, file);
-	const public = require(filePath);
-	if (public && public.name) {
-		app.get(public.name, public.run);
-	}
-}
-
-app.get('/', async (req, res) => {
-	res.sendFile('./WebApp/html/home.html', { root: __dirname });
-});
-
-app.listen(543, () => console.log('Web app launched at port 543'));
