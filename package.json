@@ -21,7 +21,8 @@
   "homepage": "https://github.com/MiekoHikari/VTA-Discord-Bot#readme",
   "dependencies": {
     "discord.js": "^14.9.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "mongoose": "^7.0.4"
   },
   "devDependencies": {
     "eslint": "^8.38.0"
