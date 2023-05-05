@@ -5,16 +5,17 @@ import { Command } from '@sapphire/framework';
 @ApplyOptions<Command.Options>({
 	description: 'Ping the bot to see how delayed your responses may be in the current hour!',
 	requiredClientPermissions: 'SendMessages',
-    cooldownDelay: 5000,
+	cooldownDelay: 5000,
 })
 export class UserCommand extends Command {
-	// Register Chat Input and Context Menu command
 	public override registerApplicationCommands(registry: Command.Registry) {
 		// Register Chat Input command
-		registry.registerChatInputCommand({
-			name: this.name,
-			description: this.description
-		});
+		registry.registerChatInputCommand((builder) =>
+			builder //
+				.setName(this.name)
+				.setDescription(this.description),
+			{ guildIds: ['1044538681203118090'] }
+		);
 	}
 
 	// Chat Input (slash) command
@@ -30,13 +31,13 @@ export class UserCommand extends Command {
 			.setDescription('The bot received your request successfully!')
 			.setColor([59, 75, 127])
 			.addFields(
-				{name: 'Bot Latency', value: `${Math.round(this.container.client.ws.ping)}ms`, inline: true},
-				{name: 'API Latency', value: `${pingMessage.createdTimestamp - interaction.createdTimestamp}ms`}
+				{ name: 'Bot Latency', value: `${Math.round(this.container.client.ws.ping)}ms`, inline: true },
+				{ name: 'API Latency', value: `${pingMessage.createdTimestamp - interaction.createdTimestamp}ms` }
 			);
 
 		return interaction.editReply({
 			content: '',
-			embeds: [embed],
+			embeds: [embed]
 		});
 	}
 }

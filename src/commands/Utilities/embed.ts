@@ -4,39 +4,40 @@ import { Command } from '@sapphire/framework';
 
 @ApplyOptions<Command.Options>({
 	description: 'Create an embed on the loaded presets',
-    requiredClientPermissions: 'SendMessages',
-    cooldownDelay: 5000,
+	requiredClientPermissions: ['SendMessages', 'EmbedLinks'],
+	cooldownDelay: 5000,
+	requiredUserPermissions: ['ManageMessages']
 })
 export class UserCommand extends Command {
 	// Register Chat Input and Context Menu command
 	public override registerApplicationCommands(registry: Command.Registry) {
-		// Register Chat Input command
-		registry.registerChatInputCommand({
-			name: this.name,
-			description: this.description
-		});
+		registry.registerChatInputCommand((builder) =>
+			builder //
+				.setName(this.name)
+				.setDescription(this.description)
+				.addStringOption((option) =>
+					option //
+						.setName('preset')
+						.setDescription('Select the preset to embed')
+						.setRequired(true)
+				), { guildIds: ['1044538681203118090'] }
+		);
 	}
 
 	// Chat Input (slash) command
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		return this.sendPing(interaction);
+		const presetOption = interaction.options.getString('preset', true);
+
+		if (presetOption == 'handbook') return this.handbook(interaction);
 	}
 
-	private async sendPing(interaction: Command.ChatInputCommandInteraction) {
-		const pingMessage = await interaction.reply({ content: 'Pinging...', fetchReply: true, ephemeral: true });
+	private async handbook(interaction: Command.ChatInputCommandInteraction) {
+		const embed1 = new EmbedBuilder()
+			.setAuthor({ name: 'VTA Handbook ver2.0' })
+			.setColor([43, 45, 49]);
 
-		const embed = new EmbedBuilder()
-			.setTitle('Pong!')
-			.setDescription('The bot received your request successfully!')
-			.setColor([59, 75, 127])
-			.addFields(
-				{name: 'Bot Latency', value: `${Math.round(this.container.client.ws.ping)}ms`, inline: true},
-				{name: 'API Latency', value: `${pingMessage.createdTimestamp - interaction.createdTimestamp}ms`}
-			);
-
-		return interaction.editReply({
-			content: '',
-			embeds: [embed],
-		});
+		interaction.channel?.send({
+			embeds: [embed1],
+		})
 	}
 }
