@@ -33,8 +33,8 @@ export class UserCommand extends Command {
 
 	private async handbook(interaction: Command.ChatInputCommandInteraction) {
 		const embed1 = new EmbedBuilder()
-			.setAuthor({ name: 'VTA Handbook ver2.0' })
-			.setColor([43, 45, 49]);
+			.setColor([43, 45, 49])
+			.setImage('https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/VTA%20Banner%20-%20Handbook.png');
 
 		interaction.channel?.send({
 			embeds: [embed1],
