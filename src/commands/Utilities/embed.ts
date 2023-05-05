@@ -34,10 +34,14 @@ export class UserCommand extends Command {
 	private async handbook(interaction: Command.ChatInputCommandInteraction) {
 		const embed1 = new EmbedBuilder()
 			.setColor([43, 45, 49])
-			.setImage('https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/VTA%20Banner%20-%20Handbook.png');
+			.setImage('https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/embed%20presets/handbook/Cover.png');
+
+		const embed2 = new EmbedBuilder()
+			.setColor([233, 77, 81])
+			.setAuthor({ name: '#Author' })
 
 		interaction.channel?.send({
-			embeds: [embed1],
+			embeds: [embed1, embed2],
 		})
 	}
 }
