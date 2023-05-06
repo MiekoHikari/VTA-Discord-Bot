@@ -94,6 +94,33 @@ export class UserCommand extends Command {
 				value: 'The community can help maintain peace by reporting violations when they happen! You can use the /report command or right click a message and report or DM VTA-Modmail or Modmail bot directly!',
 				inline: false
 			}]
+		);
+
+		const embed6 = this.embedBanner('https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/embed%20presets/handbook/Roles%20and%20Channels.png');
+		const embed7 = this.infoEmbed(
+			'#Roles',
+			'Roles',
+			'There are a lot of channels that only specific members with certain roles can view, you can get some of these special items through <#1103870442068004945>!',
+			[{
+				name: 'Admins and Mods',
+				value: 'We don\'t differentiate members with different powers, admins and staff are coloured purple while moderators are camoflauged in the memberlist!',
+				inline: false
+			},
+			{
+				name: 'Gaming Club Roles',
+				value: 'We sure do have a gaming community within the server! To access the ~~basement~~ streets, grab some roles from <#1103870442068004945>!',
+				inline: false
+			},
+			{
+				name: 'VTuber and Artist Roles',
+				value: 'We value a user\'s work and identity, for this reason we have many processing for these roles, to get started use /Application enroll',
+				inline: false
+			},
+			{
+				name: 'Voice Channels',
+				value: 'To use voice channels, we have made it so that you need to be activity level 3 to join. It\'s a security enforcement to prevent trolls and raids.',
+				inline: false
+			}]
 		)
 
 		interaction.channel?.send({
@@ -105,8 +132,11 @@ export class UserCommand extends Command {
 		interaction.channel?.send({
 			embeds: [embed5]
 		});
+		interaction.channel?.send({
+			embeds: [embed6, embed7]
+		});
 
-		interaction.reply('Sent all embeds!')
+		interaction.reply({ content: 'Sent all embeds!', ephemeral: true })
 	}
 
 	private embedBanner(url: string) {
