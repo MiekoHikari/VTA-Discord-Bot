@@ -123,20 +123,63 @@ export class UserCommand extends Command {
 			}]
 		)
 
-		interaction.channel?.send({
-			embeds: [embed1, embed2]
-		});
-		interaction.channel?.send({
-			embeds: [embed3, embed4]
-		});
-		interaction.channel?.send({
-			embeds: [embed5]
-		});
-		interaction.channel?.send({
-			embeds: [embed6, embed7]
-		});
+		const embed8 = this.embedBanner('https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/embed%20presets/handbook/Q%26A.png');
+		const embed9 = this.infoEmbed(
+			'#FAQ',
+			'Frequently Asked Questions',
+			'Before asking a question regarding VTA, have a look at <#1104266174822363207>! If your question remains unanswered then DM Modmail!',
+			[]
+		)
 
 		interaction.reply({ content: 'Sent all embeds!', ephemeral: true })
+
+		let msg1: string = 'undefined';
+		let msg2: string = 'undefined';
+		let msg3: string = 'undefined';
+		let msg4: string = 'undefined';
+		let msg5: string = 'undefined';
+
+		await interaction.channel?.send({
+			embeds: [embed1, embed2]
+		}).then((message) => {
+			msg1 = message.url;
+		});
+
+		await interaction.channel?.send({
+			embeds: [embed3, embed4]
+		}).then((message) => {
+			msg2 = message.url;
+		});
+
+		await interaction.channel?.send({
+			embeds: [embed5]
+		}).then((message) => {
+			msg3 = message.url;
+		});
+
+		await interaction.channel?.send({
+			embeds: [embed6, embed7]
+		}).then((message) => {
+			msg4 = message.url;
+		});
+
+		await interaction.channel?.send({
+			embeds: [embed8, embed9]
+		}).then((message) => {
+			msg5 = message.url;
+		});
+
+		const embed10 = new EmbedBuilder()
+			.setColor([233, 77, 81])
+			.setTitle('Table of Contents')
+			.setDescription(`[Introduction](${msg1})\n[Rules](${msg2})\n[Moderation Policy](${msg3})\n[Roles and Channels](${msg4})\n[Frequently Asked Questions](${msg5})`)
+			.addFields([{ name: 'You will gain access shortly...', value: 'Wait for 10 minutes before interacting with the server, this is part of our security enforcements to prevent raids', inline: false }]);
+
+		embed10.setImage(interaction.guild?.bannerURL() || 'https://raw.githubusercontent.com/MiekoHikari/VTA-Discord-Bot/major-development/src/assets/embed%20presets/handbook/Banner.webp');
+
+		interaction.channel?.send({
+			embeds: [embed10]
+		})
 	}
 
 	private embedBanner(url: string) {
