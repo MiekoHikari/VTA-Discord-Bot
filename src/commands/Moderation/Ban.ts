@@ -1,3 +1,5 @@
+// Future Plans is when we get a web server running, accept ban appeal forms online!
+
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { Timestamp } from '@sapphire/time-utilities';
@@ -29,46 +31,57 @@ export class UserCommand extends Command {
 			.setColor('DarkRed')
 			.setTitle('You are permanently banned from the VTuber Academy 💔')
 			.setDescription('You will no longer have any rights to join back in. Evading bans will perma ban you.')
-			.addFields({ name: 'Reason', value: `${reason}` })
-		
+			.addFields(
+				{ name: 'Reason', value: `${reason}`, inline: false },
+				{ name: 'Ban Appeals', value: 'It is possible to appeal for a ban, DM @VTuberAcademy Twitter' }
+			);
+
 		await this.logAction(interaction, target, reason);
-		interaction.reply(`${target.username} has been banned for ${reason}\n\nRead the handbook to remind yourselves on how to maintain peace in VTA!`);
+		interaction.reply(
+			`${target.username} has been banned for ${reason}\n\nRead the handbook to remind yourselves on how to maintain peace in VTA!`
+		);
 		return target.send({ embeds: [embed] }).then(() => {
 			interaction.guild?.bans.create(target, { reason: `[${interaction.user.username}] ${reason}`, deleteMessageSeconds: 604800 });
-		})
+		});
 	}
 
 	private async logAction(interaction: Command.ChatInputCommandInteraction, target: User, reason: string) {
-		const Channel = await interaction.guild?.channels.fetch(`${process.env.ModLoggingChannel}`) as TextChannel;
-		
+		const Channel = (await interaction.guild?.channels.fetch(`${process.env.ModLoggingChannel}`)) as TextChannel;
+
 		let messageLogs: Array<string> = [];
 		const timestamp = new Timestamp('DD-MM-YYYY HH:mm');
 
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];
-				await message.attachments.forEach(attachment => {
-					attachments.push(attachment.url)
+				await message.attachments.forEach((attachment) => {
+					attachments.push(attachment.url);
 				});
 
-				messageLogs?.push(`\n[${timestamp.displayUTC(message.createdTimestamp)}] [${message.author.username}]\n${message.content}\n${attachments}`)
-			})
+				messageLogs?.push(
+					`\n[${timestamp.displayUTC(message.createdTimestamp)}] [${message.author.username}]\n${message.content}\n${attachments}`
+				);
+			});
 		});
 
 		const log: string = messageLogs.reverse().join('\n');
-		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' })
+		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' });
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${target.username} has been expelled.`)
-			.addFields({ name: 'Moderator', value: `<@${interaction.user.id}>`, inline: true }, { name: 'Target', value: `<@${target?.id}>`, inline: true }, { name: 'Reason', value: `${reason}`, inline: false})
+			.addFields(
+				{ name: 'Moderator', value: `<@${interaction.user.id}>`, inline: true },
+				{ name: 'Target', value: `<@${target?.id}>`, inline: true },
+				{ name: 'Reason', value: `${reason}`, inline: false }
+			)
 			.setColor('Red');
 
 		return Channel.send({
 			embeds: [embed],
-			files: [attachment],
+			files: [attachment]
 		}).then(() => {
 			modProfile.findOne({ DiscordID: target?.id }).then(async (user) => {
-				if(!user) return;
+				if (!user) return;
 				user.deleteOne();
 			});
 		});

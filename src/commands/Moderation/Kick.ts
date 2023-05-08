@@ -15,7 +15,7 @@ export class UserCommand extends Command {
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('The target member').setRequired(true))
-				.addStringOption((option) => option.setName('reason').setDescription('Why you\'re kicking this user').setRequired(true))
+				.addStringOption((option) => option.setName('reason').setDescription("Why you're kicking this user").setRequired(true))
 		);
 	}
 
@@ -26,45 +26,53 @@ export class UserCommand extends Command {
 		const embed = new EmbedBuilder()
 			.setAuthor({ name: `Kicked by ${interaction.user.username}` })
 			.setColor('DarkRed')
-			.setTitle('You\'ve been shoved out of the door 🚪')
-			.setDescription('We just don\'t want you in VTA, just chill out for a bit before joining back in ya know?')
-			.addFields({ name: 'Reason', value: `${reason}` })
-		
+			.setTitle("You've been shoved out of the door 🚪")
+			.setDescription("We just don't want you in VTA, just chill out for a bit before joining back in ya know?")
+			.addFields({ name: 'Reason', value: `${reason}` });
+
 		await this.logAction(interaction, target, reason);
-		interaction.reply(`${target.username} has been kicked for ${reason}\n\nRead the handbook to remind yourselves on how to maintain peace in VTA!`);
+		interaction.reply(
+			`${target.username} has been kicked for ${reason}\n\nRead the handbook to remind yourselves on how to maintain peace in VTA!`
+		);
 		return target.send({ embeds: [embed] }).then(() => {
 			interaction.guild?.members.kick(target, reason);
-		})
+		});
 	}
 
 	private async logAction(interaction: Command.ChatInputCommandInteraction, target: User, reason: string) {
-		const Channel = await interaction.guild?.channels.fetch(`${process.env.ModLoggingChannel}`) as TextChannel;
-		
+		const Channel = (await interaction.guild?.channels.fetch(`${process.env.ModLoggingChannel}`)) as TextChannel;
+
 		let messageLogs: Array<string> = [];
 		const timestamp = new Timestamp('DD-MM-YYYY HH:mm');
 
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];
-				await message.attachments.forEach(attachment => {
-					attachments.push(attachment.url)
+				await message.attachments.forEach((attachment) => {
+					attachments.push(attachment.url);
 				});
 
-				messageLogs?.push(`\n[${timestamp.displayUTC(message.createdTimestamp)}] [${message.author.username}]\n${message.content}\n${attachments}`)
-			})
+				messageLogs?.push(
+					`\n[${timestamp.displayUTC(message.createdTimestamp)}] [${message.author.username}]\n${message.content}\n${attachments}`
+				);
+			});
 		});
 
 		const log: string = messageLogs.reverse().join('\n');
-		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' })
+		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' });
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${target.username} has been suspended.`)
-			.addFields({ name: 'Moderator', value: `<@${interaction.user.id}>`, inline: true }, { name: 'Target', value: `<@${target?.id}>`, inline: true }, { name: 'Reason', value: `${reason}`, inline: false})
+			.addFields(
+				{ name: 'Moderator', value: `<@${interaction.user.id}>`, inline: true },
+				{ name: 'Target', value: `<@${target?.id}>`, inline: true },
+				{ name: 'Reason', value: `${reason}`, inline: false }
+			)
 			.setColor('Red');
 
 		return Channel.send({
 			embeds: [embed],
-			files: [attachment],
+			files: [attachment]
 		});
 	}
 }

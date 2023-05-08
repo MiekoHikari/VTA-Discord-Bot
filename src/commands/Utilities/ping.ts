@@ -5,15 +5,16 @@ import { Command } from '@sapphire/framework';
 @ApplyOptions<Command.Options>({
 	description: 'Ping the bot to see how delayed your responses may be in the current hour!',
 	requiredClientPermissions: 'SendMessages',
-	cooldownDelay: 5000,
+	cooldownDelay: 5000
 })
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		// Register Chat Input command
-		registry.registerChatInputCommand((builder) =>
-			builder //
-				.setName(this.name)
-				.setDescription(this.description),
+		registry.registerChatInputCommand(
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description),
 			{ guildIds: ['1044538681203118090'] }
 		);
 	}
