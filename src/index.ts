@@ -1,6 +1,7 @@
 import './lib/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
 import { GatewayIntentBits } from 'discord.js';
+import mongoose from 'mongoose';
 
 const client = new SapphireClient({
 	logger: {
@@ -14,6 +15,9 @@ const main = async () => {
 		client.logger.info('Logging in');
 		await client.login();
 		client.logger.info('Logged in as ' + client.user?.username);
+
+		await mongoose.connect(`${process.env.MongoURL}`);
+		client.logger.info('Database connected successfully');
 	} catch (error) {
 		client.logger.fatal(error);
 		client.destroy();

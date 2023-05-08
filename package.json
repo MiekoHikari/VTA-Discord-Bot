@@ -10,10 +10,12 @@
     "@sapphire/discord.js-utilities": "6.0.7",
     "@sapphire/framework": "^4.4.3",
     "@sapphire/plugin-logger": "^3.0.3",
+    "@sapphire/time-utilities": "^1.7.9",
     "@sapphire/utilities": "^3.11.1",
     "@skyra/env-utilities": "^1.2.0",
     "colorette": "^2.0.20",
-    "discord.js": "^14.10.2"
+    "discord.js": "^14.10.2",
+    "mongoose": "^7.1.0"
   },
   "devDependencies": {
     "@sapphire/cli": "^1.6.1",
