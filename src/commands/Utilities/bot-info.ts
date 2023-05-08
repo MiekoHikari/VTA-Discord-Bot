@@ -22,14 +22,15 @@ export class UserCommand extends Command {
 	public async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
         const embed = new EmbedBuilder()
             .setColor([255, 255, 255])
-            .setDescription('A Discord bot designed to help you have a better experience in the VTA Discord Server. I was created by Mieko Hikari, a talented developer who loves building tools to help people smile. Mieko Hikari is always working hard to improve me and make me more useful for our community.\n\nIf you have any questions or suggestions for VTA Bot, feel free to message Mieko Hikari and let him know or check out [github](https://github.com/MiekoHikari/VTA-Discord-Bot/tree/master)!.')
-            .setTitle('Hello! I am Kat! (don\'t touch me)')
+            .setDescription('KitAI is Mieko Hikari\'s own developed Artificial Intelligence! By using KitAI you agree to let Mieko Hikari use your responses to make the bot deliver better replies!')
+            .setTitle('Hello! I am KitAi!')
             .setThumbnail(interaction.client.user.avatarURL())
             .addFields(
+				{ name: 'VTA Bot', value: 'A Discord bot designed to help you have a better experience in the VTA Discord Server. I was created by Mieko Hikari, a talented developer who loves building tools to help people smile. Mieko Hikari is always working hard to improve me and make me more useful for our community.\n\nIf you have any questions or suggestions for VTA Bot, feel free to message Mieko Hikari and let him know or check out [github](https://github.com/MiekoHikari/VTA-Discord-Bot/tree/master)!'},
 				{ name: 'Creator 💙', value: '<@826774272395182101>' },
-				{ name: 'Support this Project ❤️', value: 'Help with server fees and the development of KatAI using this link https://streamelements.com/tip/miekohikari' }
+				{ name: 'Support this Project ❤️', value: 'Help with server fees and the development of KitAI using this link https://streamelements.com/tip/miekohikari' }
 			)
-			.setFooter({ text: 'Thank you for using VTA Bot!' });
+			.setFooter({ text: 'Thank you for using VTA Bot! | VTA Bot and KitAI is NOT the same' });
 		return interaction.reply({
             embeds: [embed],
             ephemeral: true
