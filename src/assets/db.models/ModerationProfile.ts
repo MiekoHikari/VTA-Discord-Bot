@@ -2,11 +2,15 @@ import { Schema, model } from 'mongoose';
 
 interface IModProfile {
 	DiscordID: string;
-	Strikes: Array<{
+	Strikes?: Array<{
 		ViolationType: string;
 		Date: string;
 		messageURL: string;
 	}>;
+	ModMail?: {
+		ThreadID: string;
+		Messages: Array<{ Date: string; username: string; avatarURL: string; content: string; attachments: string }>;
+	};
 }
 
 const ProfileSchema = new Schema<IModProfile>({
@@ -15,7 +19,11 @@ const ProfileSchema = new Schema<IModProfile>({
 		ViolationType: string;
 		Date: string;
 		messageURL?: string;
-	}>
+	}>,
+	ModMail: {
+		ThreadID: String,
+		Messages: Array<{ Date: string; username: string; avatarURL: string; content: string; attachments: string }>
+	}
 });
 
 const modProfile = model<IModProfile>('ModerationProfile', ProfileSchema);

@@ -4,7 +4,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { Timestamp } from '@sapphire/time-utilities';
 import { AttachmentBuilder, EmbedBuilder, TextChannel, User } from 'discord.js';
-import modProfile from '../../assets/db.models/ModerationProfile';
+import modProfile from '../../../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Command.Options>({
 	description: 'Ban targetted member',

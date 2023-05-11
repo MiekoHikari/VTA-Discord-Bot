@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { AttachmentBuilder, EmbedBuilder, TextChannel, User } from 'discord.js';
 import { Timestamp } from '@sapphire/time-utilities';
-import modProfile from '../../assets/db.models/ModerationProfile';
+import modProfile from '../../../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Command.Options>({
 	description: 'Strike a user for violating a policy',
@@ -86,7 +86,7 @@ export class UserCommand extends Command {
 					await user.save();
 				}
 
-				user?.Strikes.push({
+				user?.Strikes?.push({
 					ViolationType: `${await this.parseViolation(violationCode)}`,
 					Date: `${timestamp.displayUTC()}`,
 					messageURL: `${message.url}`
@@ -95,7 +95,7 @@ export class UserCommand extends Command {
 				await user?.save();
 
 				let history: Array<string> = [];
-				user?.Strikes.forEach((strike) => {
+				user?.Strikes?.forEach((strike) => {
 					history.reverse().push(`[${strike.ViolationType}] [${strike.Date}] [${strike.messageURL}]`);
 				});
 
