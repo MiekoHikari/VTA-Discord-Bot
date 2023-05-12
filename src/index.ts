@@ -1,6 +1,6 @@
 import './lib/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
-import { GatewayIntentBits } from 'discord.js';
+import { GatewayIntentBits, Partials } from 'discord.js';
 import mongoose from 'mongoose';
 
 const client = new SapphireClient({
@@ -16,6 +16,7 @@ const client = new SapphireClient({
 	],
 	defaultCooldown: {delay: 5000},
 	loadDefaultErrorListeners: true,
+	partials: [Partials.Message, Partials.Channel]
 });
 
 const main = async () => {
