@@ -1,6 +1,17 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, ForumChannel, Guild, Message } from 'discord.js';
+import {
+	ActionRowBuilder,
+	AttachmentBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	EmbedBuilder,
+	ForumChannel,
+	Guild,
+	Message,
+	ThreadChannel
+} from 'discord.js';
 import modProfile from '../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Listener.Options>({
@@ -44,11 +55,42 @@ export class ModMailListener extends Listener {
 			const user = await modProfile.findOne({ ['ModMail.ThreadID']: message.channel.id });
 			if (user === null || user.ModMail === undefined) return message.reply('Failed to fetch DM User');
 
-			if (message.content.startsWith('=close')) {
-				// Close thread.
-			}
-
 			const member = await message.guild?.members.fetch(user.DiscordID);
+
+			if (message.content.startsWith('=close')) {
+				const reason: string = message.content.slice(1).trim();
+
+				const embed: EmbedBuilder = new EmbedBuilder()
+					.setAuthor({ name: `${message.author.username}` })
+					.setColor('Random')
+					.setTitle('Thread Closed 🔒')
+					.setDescription("Thank you for using VTA Mod-Mail! If you have any more questions in the future, don't hesitate to contact us!")
+					.addFields({ name: 'Reason', value: `${reason}` })
+					.setTimestamp()
+					.setFooter({ text: `Thread ID: ${message.channel.id}` });
+
+				const logs = user.ModMail.Messages;
+				let sendableLog: string[] = []
+				logs.forEach(log => {
+					sendableLog.push(`[${log.ts}] [${log.username}] ${log.content}`);
+					
+					log.attachments?.forEach(attachment => {
+						sendableLog.push(`[${log.ts}] [${log.username}] ${attachment}`);
+					})
+				})
+
+				const attachment = new AttachmentBuilder(Buffer.from(sendableLog.join('\n')), { name: `${member?.user.username}-${message.channel.id}.txt` });
+
+				member?.send({ embeds: [embed], files: [attachment] });
+				message.channel.send({ embeds: [embed], files: [attachment] });
+
+				user.ModMail = undefined;
+				await user.save();
+
+				const channel = message.channel as ThreadChannel;
+				await channel.setLocked(true, `Thread ID ${message.channel.id} resolved.`);
+				return channel.setArchived(true, `Thread ID ${message.channel.id} archived.`);
+			}
 
 			const attachments: any[] = [];
 			message.attachments.forEach((attachment) => {
@@ -58,15 +100,26 @@ export class ModMailListener extends Listener {
 				});
 			});
 
-			let sender = `${message.author.username}`
-			if (message.content.startsWith('-')) sender = 'VTA Staff'
+			let sender = `${message.author.username}`;
+			if (message.content.startsWith('-')) sender = 'VTA Staff';
 
-			let MsgArray = user.ModMail.Messages;
-			MsgArray.push({ ts: `${Date.now() / 1000}`, username: message.author.username, avatarURL: `${message.author.avatarURL()}`, content: message.content })
-			user.ModMail.Messages = MsgArray;
-			user.save();
+			member?.send({ content: `[${sender}] ${message.content}`, files: attachments }).then((msg) => {
+				if (user.ModMail === undefined) return;
 
-			member?.send({ content: `[${sender}] ${message.content}`, files: attachments })
+				let msgAttachments: string[] = [];
+				msg.attachments.forEach((attachment) => msgAttachments.push(`${attachment.url}`));
+
+				let MsgArray = user.ModMail?.Messages ?? [];
+				MsgArray.push({
+					ts: `${new Date().toUTCString()}`,
+					username: message.author.username,
+					content: message.content,
+					attachments: msgAttachments
+				});
+				user.ModMail.Messages = MsgArray;
+				user.save();
+			});
+
 			message.react('📨');
 		}
 	}
@@ -87,8 +140,13 @@ export class ModMailListener extends Listener {
 			});
 		});
 
-		let MsgArray = await user.ModMail?.Messages ?? [];
-		MsgArray.push({ ts: `${Date.now() / 1000}`, username: message.author.username, avatarURL: message.author.avatarURL(), content: message.content })
+		let MsgArray = (await user.ModMail?.Messages) ?? [];
+		MsgArray.push({
+			ts: `${new Date().toUTCString()}`,
+			username: message.author.username,
+			avatarURL: message.author.avatarURL(),
+			content: message.content
+		});
 		user.ModMail.Messages = MsgArray;
 		user.save();
 

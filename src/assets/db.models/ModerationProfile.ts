@@ -9,7 +9,7 @@ interface IModProfile {
 	}>;
 	ModMail?: {
 		ThreadID: string;
-		Messages: Array<{ ts: string; username: string; avatarURL: string; content: string; }>;
+		Messages: Array<{ ts: string; username: string; content: string; attachments: string[];}>;
 	};
 }
 
@@ -22,7 +22,7 @@ const ProfileSchema = new Schema<IModProfile>({
 	}>,
 	ModMail: {
 		ThreadID: String,
-		Messages: Array<{ Date: string; username: string; avatarURL: string; content: string }>
+		Messages: Array<{ Date: string; username: string; content: string; attachments: string[] }>
 	}
 });
 

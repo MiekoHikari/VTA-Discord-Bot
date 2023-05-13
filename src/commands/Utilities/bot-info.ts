@@ -24,8 +24,7 @@ export class UserCommand extends Command {
 		const embed = new EmbedBuilder()
 			.setColor([255, 255, 255])
 			.setDescription(
-				"KitAI is Mieko Hikari's own developed Artificial Intelligence! By using KitAI you agree to let Mieko Hikari use your responses to make the bot deliver better replies!"
-			)
+				"Greetings, world! I am KitAI, a friendly AI created by Mieko Hikari. I'm here to provide support, information, and a friendly chat. Let's embark on this journey together!")
 			.setTitle('Hello! I am KitAi!')
 			.setThumbnail(interaction.client.user.avatarURL())
 			.addFields(
@@ -33,10 +32,10 @@ export class UserCommand extends Command {
 					name: 'VTA Bot',
 					value: 'A Discord bot designed to help you have a better experience in the VTA Discord Server. I was created by Mieko Hikari, a talented developer who loves building tools to help people smile. Mieko Hikari is always working hard to improve me and make me more useful for our community.\n\nIf you have any questions or suggestions for VTA Bot, feel free to message Mieko Hikari and let him know or check out [github](https://github.com/MiekoHikari/VTA-Discord-Bot/tree/master)!'
 				},
-				{ name: 'Creator 💙', value: '<@826774272395182101>' },
+				{ name: 'Creator 💙', value: '<@826774272395182101>', inline:true },
 				{
 					name: 'Support this Project ❤️',
-					value: 'Help with server fees and the development of KitAI using this link https://streamelements.com/tip/miekohikari'
+					value: 'Help with server fees over at https://patreon.com/MiekoHikari', inline: true
 				}
 			)
 			.setFooter({ text: 'Thank you for using VTA Bot! | VTA Bot and KitAI is NOT the same' });

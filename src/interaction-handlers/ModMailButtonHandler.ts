@@ -22,9 +22,11 @@ export class ButtonHandler extends InteractionHandler {
 			}
 
 			let history: Array<string> = [];
-			await user?.Strikes?.forEach((strike) => {
+			user?.Strikes?.forEach((strike) => {
 				history.reverse().push(`[${strike.ViolationType}] [${strike.Date}] [${strike.messageURL}]`);
 			});
+
+			console.log(guildMember);
 
 			const memberEmbed = new EmbedBuilder()
 				.setColor('Random')
@@ -32,25 +34,26 @@ export class ButtonHandler extends InteractionHandler {
 				.setDescription(`Important information you may need to know before serving this member`)
 				.setThumbnail(`${interaction.user.avatarURL()}`)
 				.addFields(
-					{ name: 'User ID', value: interaction.user.id, inline: true },
-					{ name: 'Server Join Date', value: `${guildMember?.joinedAt}`, inline: true },
-					{ name: 'Roles', value: `${guildMember?.roles.cache}` },
-					{ name: 'Strike History', value: `${history.join('\n')}`, inline: false }
+					{ name: 'User ID', value: `${interaction.user.id}`, inline: true },
+					{ name: 'Strike History', value: `**${history.join('\n')}**`, inline: false }
 				)
 				.setTimestamp();
 
-			const DiscordServer = await interaction.client.guilds.fetch(`${process.env.ServerID}`)
+			const DiscordServer = await interaction.client.guilds.fetch(`${process.env.ServerID}`);
 			const ModMailChannel = (await DiscordServer.channels.fetch(`${process.env.ModMailChannel}`)) as ForumChannel;
-			const webhooks = await ModMailChannel.fetchWebhooks()
+			const webhooks = await ModMailChannel.fetchWebhooks();
 			const webhook = webhooks.first();
 
 			const ModMailThread = await ModMailChannel.threads.create({
 				name: `${interaction.user.username}`,
-				message: { content: `I summon all <@&${process.env.ModRole}> to respond to the new thread by <@${interaction.user.id}>!`, embeds: [memberEmbed] },
+				message: {
+					content: `I summon all <@&${process.env.ModRole}> to respond to the new thread by <@${interaction.user.id}>!`,
+					embeds: [memberEmbed]
+				},
 				reason: `VTA ModMail Create`
 			});
 
-			const message = await interaction.channel?.messages.fetch(`${interaction.message.content}`) ?? interaction.message;
+			const message = (await interaction.channel?.messages.fetch(`${interaction.message.content}`)) ?? interaction.message;
 			let MsgArray: any[] = [];
 
 			const attachments: any[] = [];
@@ -61,29 +64,42 @@ export class ButtonHandler extends InteractionHandler {
 				});
 			});
 
-			webhook?.send({
-				avatarURL: `${message.author.avatarURL()}`,
-				username: `${message.author.username}`,
-				threadId: ModMailThread.id,
-				content: message.content,
-				files: attachments
-			});
+			webhook
+				?.send({
+					avatarURL: `${message.author.avatarURL()}`,
+					username: `${message.author.username}`,
+					threadId: ModMailThread.id,
+					content: message.content,
+					files: attachments
+				})
+				.then((msg) => {
+					if (user === null) return;
 
-			MsgArray.push({ ts: `${Date.now() / 1000}`, username: interaction.user.username, avatarURL: interaction.user.avatarURL(), content: message.content })
+					let msgAttachments: string[] = [];
+					msg.attachments.forEach((attachment) => {
+						msgAttachments.push(`${attachment.url}`);
+					});
+					MsgArray.push({
+						ts: `${new Date().toUTCString()}`,
+						username: interaction.user.username,
+						content: message.content,
+						attachments: msgAttachments
+					});
 
-			user.ModMail = {
-				ThreadID: ModMailThread.id,
-				Messages: MsgArray
-			};
+					user.ModMail = {
+						ThreadID: ModMailThread.id,
+						Messages: MsgArray
+					};
 
-			user.save();
+					user?.save();
+				});
 
 			const embed = new EmbedBuilder()
 				.setTitle('Thread successfully created!')
-				.setDescription('All messages are logged for future reference and quality changes and is only available to VTA Staff.')
+				.setDescription('ModMail logs are available at the end of the thread.')
 				.setTimestamp();
 
-			interaction.message.edit({content: 'ModMail Thread Created!', embeds: [embed], components: []});
+			interaction.message.edit({ content: 'ModMail Thread Created!', embeds: [embed], components: [] });
 		}
 
 		return;
