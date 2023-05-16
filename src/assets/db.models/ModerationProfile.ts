@@ -8,8 +8,12 @@ interface IModProfile {
 		messageURL: string;
 	}>;
 	ModMail?: {
-		ThreadID: string;
-		Messages: Array<{ ts: string; username: string; content: string; attachments: string[];}>;
+		ThreadID?: string;
+		Messages?: Array<{ ts: string; username: string; content: string; attachments: string[];}>;
+		Target?: {
+			id: string;
+			breach: { name: string; reason: string; }
+		}
 	};
 }
 
@@ -22,8 +26,12 @@ const ProfileSchema = new Schema<IModProfile>({
 	}>,
 	ModMail: {
 		ThreadID: String,
-		Messages: Array<{ Date: string; username: string; content: string; attachments: string[] }>
-	}
+		Messages: Array<{ Date: string; username: string; content: string; attachments: string[] }>,
+		Target: {
+			id: String,
+			breach: { name: String, reason: String }
+		}
+	},
 });
 
 const modProfile = model<IModProfile>('ModerationProfile', ProfileSchema);

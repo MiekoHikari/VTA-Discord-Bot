@@ -1,5 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import modProfile from '../../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Command.Options>({
 	description: 'Report a member for a breach',
@@ -31,15 +33,37 @@ export class UserCommand extends Command {
 	}
 
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		// const target = await interaction.options.getUser('target', true);
-		// const breach = await interaction.options.getString('breach', true);
-		// const reason = await interaction.options.getString('reason', true);
+		const target = await interaction.options.getUser('target', true);
+		const breach = await interaction.options.getString('breach', true);
+		const reason = await interaction.options.getString('reason', true);
 
-		// Implement Modmail first
+		let userDB = await modProfile.findOne({ DiscordID: interaction.user.id });
+
+		if (userDB === null) {
+			userDB = new modProfile({
+				DiscordID: `${interaction.user.id}`,
+				Strikes: []
+			});
+
+			await userDB.save();
+		}
+
+		userDB.ModMail = {
+			Target: {
+				id: target.id,
+				breach: { name: breach, reason: reason }
+			}
+		}
+
+		await userDB.save();
+
+		const confirm = new ButtonBuilder().setCustomId('modmail-report').setLabel('Report User ⚠️').setStyle(ButtonStyle.Danger);
+		const row: any = new ActionRowBuilder().addComponents(confirm);
 
 		interaction.reply({
-			content: 'A moderator will get to you shortly...',
-			ephemeral: true
-		})
+			content: `Target: ${target.id}\nBreach: ${breach}\nReason: ${reason}\n\nThis will create a modmail thread in your DMs, make sure your DMs are open!`,
+			ephemeral: true,
+			components: [row]
+		});
 	}
 }

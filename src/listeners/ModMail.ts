@@ -69,7 +69,7 @@ export class ModMailListener extends Listener {
 					.setTimestamp()
 					.setFooter({ text: `Thread ID: ${message.channel.id}` });
 
-				const logs = user.ModMail.Messages;
+				const logs = user.ModMail.Messages ?? [];
 				let sendableLog: string[] = []
 				logs.forEach(log => {
 					sendableLog.push(`[${log.ts}] [${log.username}] ${log.content}`);
