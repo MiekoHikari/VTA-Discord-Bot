@@ -66,7 +66,7 @@ export class UserCommand extends Command {
 						},
 						{
 							name: '2. Texting Policy',
-							value: '`2.1 Try to stay relevant to the channel\n2.2 Avoid spamming\n2.3 No NSFW, Political and religion talks\n2.4 Keep drama to a minimum\n2.5 Make sure the person you are talking to is comfortable!\n2.6 This is an english speaking community! Try to speak english only if possible.`',
+							value: '`2.1 Try to stay relevant to the channel\n2.2 Avoid spamming\n2.3 No NSFW, Political and religion talks\n2.4 Keep drama to a minimum\n2.5 This is an english speaking community! Try to speak english only if possible.\nWe ask that you treat everyone with respect`',
 							inline: false
 						},
 						{
