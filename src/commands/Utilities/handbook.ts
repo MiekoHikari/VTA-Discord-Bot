@@ -52,7 +52,7 @@ export class UserCommand extends Command {
 				this.infoEmbed(
 					'#Rules',
 					'Serverwide Rules',
-					'To ensure we maintain a positive community, we have laid out some rules for everyone to follow!',
+					'We don\'t intend to overhelm the members with rules but with the interest of making a friendly and comfortable environment for all members, we have laid out these rules:',
 					[
 						{
 							name: '0. By using an discord account, you adhere to the following:',

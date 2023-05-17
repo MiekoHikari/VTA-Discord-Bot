@@ -12,7 +12,7 @@ import {
 	Message,
 	ThreadChannel
 } from 'discord.js';
-import modProfile from '../assets/db.models/ModerationProfile';
+import modProfile from '../../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Listener.Options>({
 	name: 'ModMail',
