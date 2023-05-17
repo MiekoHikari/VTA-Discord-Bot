@@ -52,7 +52,7 @@ export class UserCommand extends Command {
 				this.infoEmbed(
 					'#Rules',
 					'Serverwide Rules',
-					'We don\'t intend to overhelm the members with rules but with the interest of making a friendly and comfortable environment for all members, we have laid out these rules:',
+					"We don't intend to overhelm the members with rules but with the interest of making a friendly and comfortable environment for all members, we have laid out these rules:",
 					[
 						{
 							name: '0. By using an discord account, you adhere to the following:',
@@ -92,12 +92,12 @@ export class UserCommand extends Command {
 						},
 						{
 							name: 'When will a user get banned?',
-							value: 'Our moderation policy consists of a 3 strikes system. Moderators on the scene of the breach have rights to assign more than 1 strikes based on the severity of the violation.',
+							value: 'Our moderation policy consists of a strikes system. When the moderation deems that it is time for an action, you will be judged.',
 							inline: false
 						},
 						{
 							name: 'Community Involvement',
-							value: 'The community can help maintain peace by reporting violations when they happen! You can use the /report command or right click a message and report or DM VTA-Modmail or Modmail bot directly!',
+							value: 'Do not do callouts in public chat. The community can help maintain peace by reporting violations when they happen! You can use the /report command or right click a message and report or DM VTA-Modmail or Modmail bot directly!',
 							inline: false
 						}
 					]
@@ -109,16 +109,16 @@ export class UserCommand extends Command {
 				this.infoEmbed(
 					'#Roles',
 					'Roles',
-					'There are a lot of channels that only specific members with certain roles can view, you can get some of these special items through <#1103870442068004945>!',
+					'There are a lot of channels that only specific members with certain roles can view, you can get some of these special items through "Channels & Roles" at the top of the channel list!',
 					[
 						{
 							name: 'Admins and Mods',
-							value: "We don't differentiate members with different powers, admins and staff are coloured purple while moderators are camoflauged in the memberlist!",
+							value: "We don't differentiate members with different powers, admins and staff are coloured purple while moderators are camoflauged in the memberlist! If you need to contact a moderator or report them, please use VTA ModMail.",
 							inline: false
 						},
 						{
 							name: 'Gaming Club Roles',
-							value: 'We sure do have a gaming community within the server! To access the ~~basement~~ streets, grab some roles from <#1103870442068004945>!',
+							value: 'We sure do have a gaming community within the server! To access the ~~basement~~ streets, grab some roles from "Channels & Roles" at the top of the channel list!',
 							inline: false
 						},
 						{
@@ -140,7 +140,7 @@ export class UserCommand extends Command {
 				this.infoEmbed(
 					'#FAQ',
 					'Frequently Asked Questions',
-					'Before asking a question regarding VTA, have a look at <#1104266174822363207>! If your question remains unanswered then DM Modmail!',
+					'Before asking a question regarding VTA, have a look at <#1108270721429413969>! If your question remains unanswered then DM Modmail!',
 					[]
 				),
 				interaction
