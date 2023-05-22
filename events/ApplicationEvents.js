@@ -43,7 +43,7 @@ module.exports = {
 
 					// Create a new document in the database
 					userval = await new Application({
-						_id: mongoose.Types.ObjectId(),
+						_id: new mongoose.Types.ObjectId(),
 						userID: interaction.user.id,
 						Status: 'Not Applied',
 						AvatarIcon: 'None',
