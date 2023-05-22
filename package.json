@@ -9,7 +9,7 @@
   "author": "Mieko Hikari",
   "license": "ISC",
   "dependencies": {
-    "cloudinary": "^1.36.1",
+    "cloudinary": "^1.37.0",
     "dayjs": "^1.11.7",
     "discord-xp": "^1.1.16",
     "discord.js": "^14.11.0",
