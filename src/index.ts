@@ -1,4 +1,4 @@
-import './lib/setup';
+import './lib/pre-setup/setup';
 import { LogLevel, SapphireClient } from '@sapphire/framework';
 import { GatewayIntentBits, Partials } from 'discord.js';
 import mongoose from 'mongoose';
@@ -12,7 +12,8 @@ const client = new SapphireClient({
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.DirectMessageTyping
+		GatewayIntentBits.DirectMessageTyping,
+		GatewayIntentBits.GuildMessageReactions
 	],
 	defaultCooldown: {delay: 5000},
 	loadDefaultErrorListeners: true,
