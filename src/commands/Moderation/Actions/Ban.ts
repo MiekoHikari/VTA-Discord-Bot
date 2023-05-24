@@ -1,5 +1,4 @@
-// Future Plans is when we get a web server running, accept ban appeal forms online!
-
+// TODO: Future Plans is when we get a web server running, accept ban appeal forms online!
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
 import { Timestamp } from '@sapphire/time-utilities';
@@ -7,14 +6,14 @@ import { AttachmentBuilder, EmbedBuilder, TextChannel, User } from 'discord.js';
 import modProfile from '../../../assets/db.models/ModerationProfile';
 
 @ApplyOptions<Command.Options>({
-	description: 'Ban targetted member',
+	description: 'Ban targeted member',
 	requiredClientPermissions: ['BanMembers'],
 	requiredUserPermissions: ['BanMembers']
 })
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
-			builder //
+			builder
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('The target user to ban').setRequired(true))
@@ -26,11 +25,12 @@ export class UserCommand extends Command {
 		const target = await interaction.options.getUser('target', true);
 		const reason = await interaction.options.getString('reason', true);
 
+		// Create an embed to send to the banned user
 		const embed = new EmbedBuilder()
 			.setAuthor({ name: `Banned by ${interaction.user.username}` })
 			.setColor('DarkRed')
 			.setTitle('You are permanently banned from the VTuber Academy 💔')
-			.setDescription('You will no longer have any rights to join back in. Evading bans will perma ban you.')
+			.setDescription('You will no longer have any rights to join back in. Evading bans will result in a permanent ban.')
 			.addFields(
 				{ name: 'Reason', value: `${reason}`, inline: false },
 				{ name: 'Ban Appeals', value: 'It is possible to appeal for a ban, DM @VTuberAcademy Twitter' }
@@ -51,6 +51,7 @@ export class UserCommand extends Command {
 		let messageLogs: Array<string> = [];
 		const timestamp = new Timestamp('DD-MM-YYYY HH:mm');
 
+		// Fetch recent messages in the interaction channel
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];
@@ -67,6 +68,7 @@ export class UserCommand extends Command {
 		const log: string = messageLogs.reverse().join('\n');
 		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' });
 
+		// Create an embed to log the ban action
 		const embed = new EmbedBuilder()
 			.setTitle(`${target.username} has been expelled.`)
 			.addFields(
@@ -76,6 +78,7 @@ export class UserCommand extends Command {
 			)
 			.setColor('Red');
 
+		// Send the ban log message and delete the moderation profile
 		return Channel.send({
 			embeds: [embed],
 			files: [attachment]

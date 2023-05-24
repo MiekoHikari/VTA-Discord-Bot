@@ -11,7 +11,7 @@ import { AttachmentBuilder, EmbedBuilder, TextChannel, User } from 'discord.js';
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
-			builder //
+			builder
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('The target member').setRequired(true))
@@ -23,6 +23,7 @@ export class UserCommand extends Command {
 		const target = await interaction.options.getUser('target', true);
 		const reason = await interaction.options.getString('reason', true);
 
+		// Create an embed to send to the kicked user
 		const embed = new EmbedBuilder()
 			.setAuthor({ name: `Kicked by ${interaction.user.username}` })
 			.setColor('DarkRed')
@@ -45,6 +46,7 @@ export class UserCommand extends Command {
 		let messageLogs: Array<string> = [];
 		const timestamp = new Timestamp('DD-MM-YYYY HH:mm');
 
+		// Fetch recent messages in the interaction channel
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];
@@ -61,6 +63,7 @@ export class UserCommand extends Command {
 		const log: string = messageLogs.reverse().join('\n');
 		const attachment = new AttachmentBuilder(Buffer.from(log), { name: 'logs.txt' });
 
+		// Create an embed to log the kick action
 		const embed = new EmbedBuilder()
 			.setTitle(`${target.username} has been suspended.`)
 			.addFields(

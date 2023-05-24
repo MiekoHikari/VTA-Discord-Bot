@@ -12,7 +12,7 @@ import modProfile from '../../../assets/db.models/ModerationProfile';
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
-			builder //
+			builder
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('The user to strike').setRequired(true))
@@ -50,6 +50,7 @@ export class UserCommand extends Command {
 		const Channel = (await interaction.guild?.channels.fetch(`${process.env.ModLoggingChannel}`)) as TextChannel;
 		let messageLogs: Array<string> = [];
 
+		// Fetch recent messages in the interaction channel
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];

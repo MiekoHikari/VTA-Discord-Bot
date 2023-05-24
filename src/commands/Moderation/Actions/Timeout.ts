@@ -11,7 +11,7 @@ import { AttachmentBuilder, EmbedBuilder, TextChannel, User } from 'discord.js';
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
-			builder //
+			builder
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('Target member to mute').setRequired(true))
@@ -27,8 +27,9 @@ export class UserCommand extends Command {
 		const duration = new Duration(await interaction.options.getString('duration', true));
 		const reason = await interaction.options.getString('reason', true);
 
+		// Check if the duration is within the allowed range
 		if (duration > new Duration('5s') || duration > new Duration('28d'))
-			return interaction.reply({ content: 'Duration must be in range of 5s - 28d', ephemeral: true });
+			return interaction.reply({ content: 'Duration must be in the range of 5s - 28d', ephemeral: true });
 
 		const epoch = Math.trunc(duration.fromNow.getTime() / 1000);
 		const embed = new EmbedBuilder()
@@ -41,7 +42,8 @@ export class UserCommand extends Command {
 		interaction.reply(
 			`${target.username} has been timed out for ${reason}\n\nRead the handbook to remind yourselves on how to maintain peace in VTA!`
 		);
-		this.logAction(interaction, target, reason, duration);
+
+		await this.logAction(interaction, target, reason, duration); // Await the logAction function
 		return target.send({ embeds: [embed] }).then(() => {
 			interaction.guild?.members.fetch(target).then((member) => {
 				member.timeout(epoch, reason);
@@ -55,6 +57,7 @@ export class UserCommand extends Command {
 		let messageLogs: Array<string> = [];
 		const timestamp = new Timestamp('DD-MM-YYYY HH:mm');
 
+		// Fetch recent messages in the interaction channel
 		await interaction.channel?.messages.fetch({ limit: 26 }).then((messages) => {
 			messages.forEach(async (message) => {
 				let attachments: Array<string> = [];
@@ -62,7 +65,7 @@ export class UserCommand extends Command {
 					attachments.push(attachment.url);
 				});
 
-				messageLogs?.push(
+				messageLogs.push(
 					`\n[${timestamp.displayUTC(message.createdTimestamp)}] [${message.author.username}]\n${message.content}\n${attachments}`
 				);
 			});
@@ -81,6 +84,7 @@ export class UserCommand extends Command {
 			)
 			.setColor('Red');
 
+		// Send the log embed and attachment to the mod logging channel
 		return Channel.send({
 			embeds: [embed],
 			files: [attachment]

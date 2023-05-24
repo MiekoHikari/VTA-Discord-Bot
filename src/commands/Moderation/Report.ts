@@ -11,12 +11,12 @@ import modProfile from '../../assets/db.models/ModerationProfile';
 export class UserCommand extends Command {
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
-			builder //
+			builder
 				.setName(this.name)
 				.setDescription(this.description)
 				.addUserOption((option) => option.setName('target').setDescription('The user you want to report').setRequired(true))
 				.addStringOption((option) =>
-					option //
+					option
 						.setName('breach')
 						.setDescription('The breached rule')
 						.addChoices(
@@ -37,6 +37,7 @@ export class UserCommand extends Command {
 		const breach = await interaction.options.getString('breach', true);
 		const reason = await interaction.options.getString('reason', true);
 
+		// Find or create the modProfile for the interaction user
 		let userDB = await modProfile.findOne({ DiscordID: interaction.user.id });
 
 		if (userDB === null) {
@@ -48,15 +49,17 @@ export class UserCommand extends Command {
 			await userDB.save();
 		}
 
+		// Update the ModMail property with the reported user and breach details
 		userDB.ModMail = {
 			Target: {
 				id: target.id,
 				breach: { name: breach, reason: reason }
 			}
-		}
+		};
 
 		await userDB.save();
 
+		// Create a confirm button component for the modmail report
 		const confirm = new ButtonBuilder().setCustomId('modmail-report').setLabel('Report User ⚠️').setStyle(ButtonStyle.Danger);
 		const row: any = new ActionRowBuilder().addComponents(confirm);
 

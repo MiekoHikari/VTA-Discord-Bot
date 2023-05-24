@@ -16,23 +16,26 @@ export class UserCommand extends Command {
 		// Register Chat Input command
 		registry.registerChatInputCommand(
 			(builder) =>
-				builder //
+				builder
 					.setName(this.name)
 					.setDescription(this.description)
 					.addStringOption((option) =>
 						option
 							.setName('chapter')
 							.setDescription('Which chapter of the handbook you want to view')
-							.addChoices({ name: 'Introduction', value: 'Introduction' })
-							.addChoices({ name: 'Rules', value: 'Rules' })
-							.addChoices({ name: 'Moderation Policy', value: 'Moderation' })
-							.addChoices({ name: 'Roles', value: 'Roles' })
-							.addChoices({ name: 'Community Engagement', value: 'Community Engagement' })
-							.addChoices({ name: 'Frequently Asked Questions', value: 'Frequently Asked Questions' })
+							.addChoices(
+								{ name: 'Introduction', value: 'Introduction' },
+								{ name: 'Rules', value: 'Rules' },
+								{ name: 'Moderation Policy', value: 'Moderation' },
+								{ name: 'Roles', value: 'Roles' },
+								{ name: 'Community Engagement', value: 'Community Engagement' },
+								{ name: 'Frequently Asked Questions', value: 'Frequently Asked Questions' }
+							)
 							.setRequired(true)
 					)
-					.addBooleanOption((option) => option.setName('hidden').setDescription('Hide the reply or not').setRequired(true)),
-			{ guildIds: ['1044538681203118090'] }
+					.addBooleanOption((option) =>
+						option.setName('hidden').setDescription('Hide the reply or not').setRequired(true)
+					)
 		);
 	}
 
@@ -41,7 +44,13 @@ export class UserCommand extends Command {
 		const chapter = interaction.options.getString('chapter', true);
 
 		const handbookObject = handbookEmbed[chapter as keyof typeof handbookEmbed];
-		this.sendEmbed(this.infoEmbed(handbookObject.embed.id, handbookObject.embed.title, handbookObject.embed.description, handbookObject.embed.fields), interaction);
+		const embed = this.infoEmbed(
+			handbookObject.embed.id,
+			handbookObject.embed.title,
+			handbookObject.embed.description,
+			handbookObject.embed.fields
+		);
+		this.sendEmbed(embed, interaction);
 	}
 
 	private sendEmbed(embed: EmbedBuilder, interaction: Command.ChatInputCommandInteraction) {
@@ -52,7 +61,8 @@ export class UserCommand extends Command {
 			ephemeral: ephemeralBool
 		});
 	}
-	private infoEmbed(id: string, title: string, description: string, fields: Array<EmbedField>) {
+
+	private infoEmbed(id: string, title: string, description: string, fields: EmbedField[]) {
 		const embed = new EmbedBuilder()
 			.setColor([233, 77, 81])
 			.setAuthor({ name: id })

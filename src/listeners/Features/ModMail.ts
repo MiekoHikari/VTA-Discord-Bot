@@ -35,13 +35,17 @@ export class ModMailListener extends Listener {
 				return this.sendThread(message, user.ModMail.ThreadID, user);
 			}
 
+			// Create a new ModMail thread
 			const embed = new EmbedBuilder()
 				.setTitle('Want to create a new ModMail thread?')
 				.setDescription("We can't find an existing modmail thread under your username")
 				.setColor('Random')
 				.setTimestamp();
 
-			const confirm = new ButtonBuilder().setCustomId('modmail-confirm').setLabel('Create Thread 🧵').setStyle(ButtonStyle.Secondary);
+			const confirm = new ButtonBuilder()
+				.setCustomId('modmail-confirm')
+				.setLabel('Create Thread 🧵')
+				.setStyle(ButtonStyle.Secondary);
 
 			const row: any = new ActionRowBuilder().addComponents(confirm);
 
@@ -58,9 +62,9 @@ export class ModMailListener extends Listener {
 			const member = await message.guild?.members.fetch(user.DiscordID);
 
 			if (message.content.startsWith('=close')) {
-				const reason: string = message.content.slice(1).trim();
+				const reason = message.content.slice(1).trim();
 
-				const embed: EmbedBuilder = new EmbedBuilder()
+				const embed = new EmbedBuilder()
 					.setAuthor({ name: `${message.author.username}` })
 					.setColor('Random')
 					.setTitle('Thread Closed 🔒')
@@ -70,16 +74,18 @@ export class ModMailListener extends Listener {
 					.setFooter({ text: `Thread ID: ${message.channel.id}` });
 
 				const logs = user.ModMail.Messages ?? [];
-				let sendableLog: string[] = []
-				logs.forEach(log => {
+				const sendableLog: string[] = [];
+				logs.forEach((log) => {
 					sendableLog.push(`[${log.ts}] [${log.username}] ${log.content}`);
-					
-					log.attachments?.forEach(attachment => {
-						sendableLog.push(`[${log.ts}] [${log.username}] ${attachment}`);
-					})
-				})
 
-				const attachment = new AttachmentBuilder(Buffer.from(sendableLog.join('\n')), { name: `${member?.user.username}-${message.channel.id}.txt` });
+					log.attachments?.forEach((attachment) => {
+						sendableLog.push(`[${log.ts}] [${log.username}] ${attachment}`);
+					});
+				});
+
+				const attachment = new AttachmentBuilder(Buffer.from(sendableLog.join('\n')), {
+					name: `${member?.user.username}-${message.channel.id}.txt`
+				});
 
 				member?.send({ embeds: [embed], files: [attachment] });
 				message.channel.send({ embeds: [embed], files: [attachment] });
@@ -100,16 +106,16 @@ export class ModMailListener extends Listener {
 				});
 			});
 
-			let sender = `${message.author.username}`;
+			let sender = message.author.username;
 			if (message.content.startsWith('-')) sender = 'VTA Staff';
 
 			member?.send({ content: `[${sender}] ${message.content}`, files: attachments }).then((msg) => {
 				if (user.ModMail === undefined) return;
 
-				let msgAttachments: string[] = [];
+				const msgAttachments: any[] = [];
 				msg.attachments.forEach((attachment) => msgAttachments.push(`${attachment.url}`));
 
-				let MsgArray = user.ModMail?.Messages ?? [];
+				const MsgArray = user.ModMail?.Messages ?? [];
 				MsgArray.push({
 					ts: `${new Date().toUTCString()}`,
 					username: message.author.username,
@@ -125,7 +131,7 @@ export class ModMailListener extends Listener {
 	}
 
 	private async sendThread(message: Message, threadID: string, user: any) {
-		const server: Guild = (await message.client.guilds.fetch(`${process.env.ServerID}`).catch(() => {
+		const server = (await message.client.guilds.fetch(`${process.env.ServerID}`).catch(() => {
 			message.client.logger.fatal('Failed to retrieve Discord server during ModMail');
 		})) as Guild;
 
@@ -140,7 +146,7 @@ export class ModMailListener extends Listener {
 			});
 		});
 
-		let MsgArray = (await user.ModMail?.Messages) ?? [];
+		const MsgArray = (await user.ModMail?.Messages) ?? [];
 		MsgArray.push({
 			ts: `${new Date().toUTCString()}`,
 			username: message.author.username,
