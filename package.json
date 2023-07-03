@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "cloudinary": "^1.36.1",
-    "dayjs": "^1.11.7",
+    "dayjs": "^1.11.9",
     "discord-xp": "^1.1.16",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
