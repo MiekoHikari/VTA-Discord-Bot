@@ -1,3 +1,6 @@
+# This repository is deprecated
+We're moving onto [VTuber-Academy/Amari](https://github.com/VTuber-Academy/Amari)!
+
 # VTA Discord Bot
 
 Public Repository that contains the source code of the VTA Bot running in the [VTuber Academy Discord](https://discord.gg/vta)
